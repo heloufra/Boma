@@ -1,9 +1,7 @@
 import 'package:boma/auth/api/api.dart';
 import 'package:june/june.dart';
-
+import '../auth.dart';
 import '../types/auth.dart';
-
-
 
 class AuthState extends JuneState {
   final AuthAPI _api = AuthAPI();
@@ -11,24 +9,27 @@ class AuthState extends JuneState {
   AuthStatus status = AuthStatus.initial;
   String phoneNumber = '';
   String? verificationId;
-  String? errorMessage;
+  String? errorMessage = "";
   bool isLoading = false;
-  
+  late Token _tokens;
+
   bool get isAuthenticated => status == AuthStatus.authenticated;
   bool get isCodeSent => status == AuthStatus.codeSent;
   bool get initial => status == AuthStatus.initial;
   bool get isError => status == AuthStatus.error;
-  
+  bool get isRegistered => status == AuthStatus.registered;
+  Token get tokens => _tokens;
+
+
   Future<void> sendOTP(String phone) async {
     isLoading = true;
     setState();
 
     try {
       final response = await _api.sendOTP(phone);
-      
+
       if (response.success) {
         phoneNumber = phone;
-        verificationId = response.token;
         status = AuthStatus.codeSent;
       } else {
         status = AuthStatus.error;
@@ -43,7 +44,6 @@ class AuthState extends JuneState {
     }
   }
 
-  // Verify OTP
   Future<void> verifyOTP(String smsCode) async {
     isLoading = true;
     setState();
@@ -55,11 +55,10 @@ class AuthState extends JuneState {
       );
 
       final response = await _api.verifyOTP(credential);
-      
+
       if (response.success) {
         status = AuthStatus.authenticated;
-        print(status);
-        await _saveAuthToken(response.token!);
+          _tokens = Token.fromJson(response.response?.data);
       } else {
         status = AuthStatus.error;
         errorMessage = response.message;
@@ -100,5 +99,25 @@ class AuthState extends JuneState {
 
   Future<void> _clearAuthToken() async {
     // Clear stored token
+  }
+
+  Future<void> registerUser(String name, String avatarURL) async {
+    isLoading = true;
+    setState();
+
+    try {
+      final user = RegisterUser(name: name, avatarURL: avatarURL);
+      final res = await _api.registerUser(user);
+
+      if (res.success) {
+        status = AuthStatus.registered;
+        setState();
+      }
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+      setState();
+    }
   }
 }

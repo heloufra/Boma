@@ -1,10 +1,19 @@
+import 'package:dio/dio.dart';
+
 enum AuthStatus {
   initial,
   codeSent,
   authenticated,
+  registered,
   error
 }
 
+class RegisterUser {
+  final String name;
+  final String avatarURL;
+
+  RegisterUser({required this.name, this.avatarURL = ""});
+}
 class PhoneAuthCredential {
   final String phoneNumber;
   // final String? verificationId;
@@ -20,11 +29,10 @@ class PhoneAuthCredential {
 class AuthResponse {
   final bool success;
   final String? message;
-  final String? token;
-
+  Response? response;
   AuthResponse({
     required this.success,
     this.message,
-    this.token,
+    this.response
   });
 }

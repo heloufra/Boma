@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:boma/auth/state/auth.dart';
 import 'package:boma/components/bbutton.dart';
 import 'package:boma/components/otp.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:june/june.dart';
 
 class OtpScreen extends StatefulWidget {
   late String phoneNumber;
@@ -65,7 +67,7 @@ class _LoginScreenState extends State<OtpScreen> {
     });
   }
 
-  void _verify() {
+  Future<void> _verify(AuthState state) async {
     if (controller.text.isEmpty || controller.text.length < 6) {
       setState(() {
         error = true;
@@ -74,93 +76,130 @@ class _LoginScreenState extends State<OtpScreen> {
       startErrorTimer();
     } else {
       setState(() {
-          isLoading = true;
+        isLoading = true;
       });
-      timer?.cancel();
-      errorTimer?.cancel();
-      context.go('/auth/register');
+
+      await state.verifyOTP(controller.text);
+      if (state.isLoading) {
+        setState(() {
+          isLoading = true;
+        });
+      } else if (state.isError) {
+        setState(() {
+          isLoading = false;
+          error = true;
+          errorMsg = state.errorMessage ?? "";
+        });
+      } else if (state.isAuthenticated) {
+        timer?.cancel();
+        errorTimer?.cancel();
+        context.go('/auth/register');
+      }
     }
   }
 
-  void _resend() {}
+  void _resend(AuthState state) async {
+    await state.sendOTP(controller.text);
+    if (state.isCodeSent) {
+      timer?.cancel();
+      setState(() {
+        resend = false;
+        secondsRemaining = maxSeconds;
+      });
+      startTimer();
+    } else if (state.isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+    } else if (state.isError) {
+      setState(() {
+        isLoading = false;
+        error = state.isError;
+        errorMsg = state.errorMessage ?? "";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor:
-            !error ? Theme.of(context).colorScheme.surface : Colors.red,
-        title: Text(
-          errorMsg,
-          style: TextStyle(
-            fontSize: 18,
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.normal,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor:
+              !error ? Theme.of(context).colorScheme.surface : Colors.red,
+          title: Text(
+            errorMsg,
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.normal,
+            ),
           ),
         ),
-      ),
-      body: Center(
-          child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (isLoading) // Show loading indicator when isLoading is true
-              CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.secondary,
-              )
-            else
-              Text(
-                "Enter your OTP to start using the app",
-                style: TextStyle(
-                  fontSize: 22,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            const SizedBox(height: 50),
-            OtpField(
-              controller: controller,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: JuneBuilder(
+          () => AuthState(),
+          builder: (state) => Center(
+            child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 20, 0, 8),
-                  child: (!resend)
-                      ? Text(
-                          '${(secondsRemaining ~/ 60).toString().padLeft(2, '0')}:${(secondsRemaining % 60).toString().padLeft(2, '0')}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        )
-                      : BButton(
-                          text: 'Resend',
-                          onTap: () {
-                            _resend();
-                          },
-                        ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 20, 0, 8),
-                  child: BButton(
-                    text: 'Verify',
-                    onTap: () {
-                      _verify();
-                    },
+                if (isLoading) // Show loading indicator when isLoading is true
+                  CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.secondary,
+                  )
+                else
+                  Text(
+                    "Enter your OTP to start using the app",
+                    style: TextStyle(
+                      fontSize: 22,
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
+                const SizedBox(height: 50),
+                OtpField(
+                  controller: controller,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 20, 0, 8),
+                      child: (!resend)
+                          ? Text(
+                              '${(secondsRemaining ~/ 60).toString().padLeft(2, '0')}:${(secondsRemaining % 60).toString().padLeft(2, '0')}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                            )
+                          : BButton(
+                              text: 'Resend',
+                              onTap: () {
+                                _resend(state);
+                              },
+                            ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 20, 0, 8),
+                      child: BButton(
+                        text: 'Verify',
+                        onTap: () {
+                          _verify(state);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      )),
-    );
+          )),
+        )
+        );
   }
 }

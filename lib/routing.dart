@@ -1,7 +1,9 @@
 import 'package:boma/auth/auth.dart';
-import 'package:boma/auth/screens/location.dart';
+import 'package:boma/auth/state/auth.dart';
+import 'package:boma/restaurants/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:june/june.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -11,6 +13,18 @@ final GlobalKey<NavigatorState> _shellNavigatorKey =
 final goRouter = GoRouter(
   initialLocation: '/auth/login',
   navigatorKey: _rootNavigatorKey,
+  redirect: (context, state) {
+      var authState = June.getState(() => AuthState());
+      if (authState.isRegistered) {
+        return state.uri.toString();
+      }
+      else {
+        if (state.uri.toString().startsWith("/auth")) {
+          return state.uri.toString();
+        }
+         return "/auth" ;
+      }
+  },
   routes: [
     ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -30,7 +44,7 @@ final goRouter = GoRouter(
                   return  OtpScreen(phoneNumber: phoneNumber);
                 },),
                 GoRoute(path: '/register', builder: (context, state) => const RegisterScreen(),),
-                GoRoute(path: '/location', builder: (context, state) => const LocationScreen(),)
+                GoRoute(path: '/restaurants', builder: (context, state) => const HomeScreen(),)
             ],
           ),
         ])

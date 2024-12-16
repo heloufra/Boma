@@ -1,26 +1,25 @@
-// import 'package:boma/routing.dart';
-// import 'package:boma/theme/theme.dart';
+import 'package:boma/routing.dart';
+import 'package:boma/theme/theme.dart';
 import 'package:flutter/material.dart';
 
-import 'auth/screens/test.dart';
 
 
-// void main() {
-//   runApp(MaterialApp.router(
-//       routerConfig: goRouter,
-//       title: 'Olo',
-//       theme: lightMode,
-//       darkTheme: darkMode,
-//     ));
-// }
-// main.dart
 void main() {
-  // Initialize June state
-  
-  runApp(MaterialApp(
-    home: LoginPage(),
-  ));
+  runApp(MaterialApp.router(
+      routerConfig: goRouter,
+      title: 'Boma',
+      theme: lightMode,
+      darkTheme: darkMode,
+    ));
 }
+// main.dart
+// void main() {
+//   // Initialize June state
+  
+//   runApp(MaterialApp(
+//     home: LoginPage(),
+//   ));
+// }
 // import 'package:flutter/material.dart';
 
 // void main() => runApp(MyApp());
