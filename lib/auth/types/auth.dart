@@ -29,10 +29,12 @@ class PhoneAuthCredential {
 class AuthResponse {
   final bool success;
   final String? message;
+  final bool? isUser;
   Response? response;
   AuthResponse({
     required this.success,
     this.message,
-    this.response
+    this.response,
+    this.isUser
   });
 }

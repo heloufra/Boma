@@ -46,10 +46,17 @@ class _LoginScreenState extends State<LoginScreen> {
         errorMsg = "🚨📢🔔 Enter your full phone number";
       });
       startTimer();
+    } else if (phoneController.text[0] != '6' && phoneController.text[0] != '7' &&  phoneController.text[0] != '8') {
+        setState(() {
+        error = true;
+        errorMsg = "🚨📢🔔 Enter a correct phone number";
+      });
+      startTimer();
     } else {
       await state.sendOTP(phoneController.text);
       if (state.isCodeSent) {
-        context.go('/auth/otp', extra: phoneController.text);
+        if (!mounted) return;
+         context.go('/auth/otp', extra: phoneController.text);
       } 
       else {
         setState(() {

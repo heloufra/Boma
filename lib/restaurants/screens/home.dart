@@ -1,5 +1,6 @@
 import 'package:boma/auth/state/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:june/june.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -9,8 +10,12 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
 
+class _HomeScreenState extends State<HomeScreen> {
+  void signout(BuildContext context, AuthState state) async {
+    await state.signOut();
+    context.go('/auth/login');
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,10 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
   
         body: JuneBuilder(
           () => AuthState(),
-          builder: (state) => const Center(
+          builder: (state) => Center(
             child: Padding(
-            padding:  EdgeInsets.all(16.0),
-            child:  Text("Arwkan"),
+            padding:  const EdgeInsets.all(16.0),
+            child:  ElevatedButton(onPressed:  () => { signout(context, state) } , child: const Text('log out')),
           )),
         ));
   }

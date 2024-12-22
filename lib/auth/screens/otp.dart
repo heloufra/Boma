@@ -93,6 +93,7 @@ class _LoginScreenState extends State<OtpScreen> {
       } else if (state.isAuthenticated) {
         timer?.cancel();
         errorTimer?.cancel();
+        if (!mounted) return;
         context.go('/auth/register');
       }
     }

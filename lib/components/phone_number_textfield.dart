@@ -8,7 +8,6 @@ class PhoneNumberField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get theme colors
     final colorScheme = Theme.of(context).colorScheme;
 
     return SizedBox(
@@ -24,13 +23,13 @@ class PhoneNumberField extends StatelessWidget {
           prefixText: '+212 ',
           prefixStyle: TextStyle(
             color: colorScheme.primary,
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
           labelText: 'Phone Number',
           labelStyle: TextStyle(
             color: colorScheme.primary,
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.normal,
           ),
           enabledBorder: OutlineInputBorder(
@@ -46,7 +45,7 @@ class PhoneNumberField extends StatelessWidget {
         ),
         style: TextStyle(
           color: colorScheme.primary,
-          fontSize: 18,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
       ),

@@ -1,27 +1,52 @@
+import 'package:boma/auth/auth.dart';
 import 'package:dio/dio.dart';
-import 'package:june/june.dart';
 
-import 'auth/state/auth.dart';
+enum StatusCode {
+  badRequest,
+  unauthorized,
+  forbidden,
+  notFound,
+  conflict,
+  internalServerError,
+}
+
+extension StatusCodeExtension on StatusCode {
+  static StatusCode? fromCode(int code) {
+    switch (code) {
+      case 400:
+        return StatusCode.badRequest;
+      case 401:
+        return StatusCode.unauthorized;
+      case 403:
+        return StatusCode.forbidden;
+      case 404:
+        return StatusCode.notFound;
+      case 409:
+        return StatusCode.conflict;
+      case 500:
+        return StatusCode.internalServerError;
+      default:
+        return null;
+    }
+  }
+}
 
 class DioClient {
   final Dio _dio;
-  // Base url for API calls
+  final TokenService _tokenService = TokenService();
   static const baseUrl = 'http://0.0.0.0:8000/';
   
-  // Dio configuration
   static BaseOptions opts = BaseOptions(
     baseUrl: baseUrl,
     responseType: ResponseType.json,
     connectTimeout: const Duration(milliseconds: 30000),
     receiveTimeout: const Duration(milliseconds: 30000),
-    // You can add default headers here
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
   );
 
-  // Singleton pattern
   static final DioClient _instance = DioClient._internal();
   
   factory DioClient() {
@@ -38,18 +63,16 @@ class DioClient {
     ));
       _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-             var authState = June.getState(() => AuthState());
-        String? token = authState.tokens.accessToken;
+       
+        String? token = await _tokenService.getAccessToken();
          options.headers['Authorization'] = 'Bearer $token';
         return handler.next(options);
       },
     ));
   }
 
-  // Getter to access dio instance
   Dio get dio => _dio;
 
-  // Common request methods
   Future<Response> get(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -94,7 +117,6 @@ class DioClient {
     }
   }
 
-  // PUT Method
   Future<Response> put(
     String path, {
     dynamic data,
@@ -119,7 +141,6 @@ class DioClient {
     }
   }
 
-  // DELETE Method
   Future<Response> delete(
     String path, {
     dynamic data,
@@ -138,5 +159,43 @@ class DioClient {
     } catch (e) {
       rethrow;
     }
+  }
+
+  static String handleDioError(DioException error) {
+    switch (error.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return "Timeout occurred while sending or receiving";
+      case DioExceptionType.badResponse:
+        final statusCode = error.response?.statusCode;
+        if (statusCode != null) {
+          switch (statusCode) {
+            case 400:
+              return "Bad Request";
+            case 401:
+            case 403:
+              return "Unauthorized";
+            case 404:
+              return "Not Found";
+            case 409:
+              return 'Conflict';
+            case 500:
+              return "Internal Server Error";
+          }
+        }
+        break;
+      case DioExceptionType.cancel:
+        break;
+      case DioExceptionType.unknown:
+        return "No Internet Connection";
+      case DioExceptionType.badCertificate:
+        return "Internal Server Error";
+      case DioExceptionType.connectionError:
+        return "Connection Error";
+      default:
+        return "Unknown Error";
+    }
+    return "Unknown Error";
   }
 }
