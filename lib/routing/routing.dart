@@ -9,6 +9,7 @@ import 'package:june/june.dart';
 import '../address/screens/add.dart';
 import '../address/screens/map.dart';
 import '../address/types/address.dart';
+import '../user/user.dart';
 
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -16,7 +17,7 @@ final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(d
 
 
 final godRouter = GoRouter(
-  initialLocation: '/auth/login',
+  initialLocation: '/profile',
   navigatorKey: _rootNavigatorKey,
   redirect: (context, state) {
     var authState = June.getState(() => AuthState());
@@ -66,6 +67,12 @@ final godRouter = GoRouter(
             ),
           ],
         ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) {
+              return const UserProfileScreen();
+          },
+           ),
         GoRoute(
           path: '/address',
           builder: (context, state) {
