@@ -14,7 +14,6 @@ class BButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get theme colors
     final colorScheme = Theme.of(context).colorScheme;
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 

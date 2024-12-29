@@ -2,13 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Address {
-  final String? id;
+  final int? id;
   final String name;
   final String type;
   final String city;
   final String fullAddress;
   final String latitude;
-  final num longitude;
+  final String longitude;
   final bool? isDefault;
 
   Address({
@@ -49,13 +49,13 @@ class Address {
   }
 
   Address copyWith({
-    String? id,
+    int? id,
     String? name,
     String? type,
     String? city,
     String? fullAddress,
     String? latitude,
-    num? longitude,
+    String? longitude,
     bool? isDefault,
   }) {
     return Address(

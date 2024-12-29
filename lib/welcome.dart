@@ -46,7 +46,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 initialCountryCode: 'MA', // Default country
                 onChanged: (phone) {
-                  print(phone.completeNumber);
+                  // print(phone.completeNumber);
                 },
               ),
               const SizedBox(height: 20),

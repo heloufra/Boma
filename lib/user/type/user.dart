@@ -1,16 +1,18 @@
 import 'package:dio/dio.dart';
 
 class UserProfile {
-  final String name;
-  final String email;
-  final String language;
+  final String? name;
+  final String? email;
+  final String? language;
 
   UserProfile(
       {required this.name, required this.email, required this.language});
+  
+  // name: json['name'] ?? "name", email: json['email'] ?? "email", language: json['language'] ?? "language");
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
-        name: json['name'], email: json['email'], language: json['language']);
+        name: json['name'] , email: json['email'], language: json['language']);
   }
 
   Map<String, dynamic> toJson() {

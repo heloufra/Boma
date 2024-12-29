@@ -8,7 +8,7 @@ class AuthAPI {
   Future<AuthResponse> sendOTP(String phoneNumber) async {
     try {
       final response = await dioClient
-          .post('/users/login/', data: {"phone_number": phoneNumber});
+          .post('/auth/otp/generate/', data: {"phone_number": phoneNumber});
       return AuthResponse(
           success: true,
           message: 'OTP sent successfully',
@@ -25,7 +25,7 @@ class AuthAPI {
 
   Future<AuthResponse> verifyOTP(PhoneAuthCredential credential) async {
     try {
-      final response = await dioClient.post('/users/otp/', data: {
+      final response = await dioClient.post('/auth/otp/verify/', data: {
         "phone_number": credential.phoneNumber,
         "otp": credential.smsCode
       });
@@ -53,7 +53,7 @@ class AuthAPI {
   Future<AuthResponse> refreshToken(String refresh) async {
     try {
       final response = await dioClient
-          .post('/users/jwt/refresh/', data: {"refresh": refresh});
+          .post('/auth/jwt/refresh/', data: {"refresh": refresh});
       return AuthResponse(
           success: response.statusCode == 200,
           message: 'OTP sent successfully',
@@ -67,26 +67,26 @@ class AuthAPI {
     }
   }
 
-  Future<AuthResponse> registerUser(RegisterUser user) async {
-    try {
-      final response =
-          await dioClient.put('/users/account/', data: {"name": user.name});
-      return AuthResponse(
-          success: response.statusCode == 200,
-          message: 'OTP sent successfully',
-          response: response);
-    } on DioException catch (e) {
-      String message = DioClient.handleDioError(e);
-      return AuthResponse(
-        success: false,
-        message: '🚨📢🔔 $message',
-      );
-    }
-  }
+  // Future<AuthResponse> registerUser(RegisterUser user) async {
+  //   try {
+  //     final response =
+  //         await dioClient.put('/users/account/', data: {"name": user.name});
+  //     return AuthResponse(
+  //         success: response.statusCode == 200,
+  //         message: 'OTP sent successfully',
+  //         response: response);
+  //   } on DioException catch (e) {
+  //     String message = DioClient.handleDioError(e);
+  //     return AuthResponse(
+  //       success: false,
+  //       message: '🚨📢🔔 $message',
+  //     );
+  //   }
+  // }
 
   Future<AuthResponse> signOut() async {
     try {
-      final response = await dioClient.post('/users/logout/');
+      final response = await dioClient.post('/auth/logout/');
       return AuthResponse(
         success: response.statusCode == 200,
         message: 'OTP sent successfully',

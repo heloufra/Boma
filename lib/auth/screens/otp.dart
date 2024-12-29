@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:boma/auth/state/auth.dart';
 import 'package:boma/components/bbutton.dart';
-import 'package:boma/components/otp.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:june/june.dart';
+import 'package:pinput/pinput.dart';
 
 class OtpScreen extends StatefulWidget {
-  late String phoneNumber;
-  OtpScreen({super.key, required this.phoneNumber});
+  final String phoneNumber;
+  const OtpScreen({super.key, required this.phoneNumber});
 
   @override
   State<OtpScreen> createState() => _LoginScreenState();
@@ -33,12 +33,50 @@ class _LoginScreenState extends State<OtpScreen> {
     startTimer();
   }
 
+  Widget buildPinPut(AuthState state) {
+    final defaultPinTheme = PinTheme(
+      width: 56,
+      height: 56,
+      textStyle: const TextStyle(
+          fontSize: 20,
+          color: Color.fromRGBO(30, 60, 87, 1),
+          fontWeight: FontWeight.w600),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromRGBO(234, 239, 243, 1)),
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyDecorationWith(
+      border: Border.all(color: Theme.of(context).colorScheme.secondary),
+      borderRadius: BorderRadius.circular(8),
+    );
+
+    final submittedPinTheme = defaultPinTheme.copyWith(
+      decoration: defaultPinTheme.decoration?.copyWith(
+        color: Theme.of(context).colorScheme.secondary,
+      ),
+    );
+
+    return Pinput(
+      length: 6,
+      defaultPinTheme: defaultPinTheme,
+      focusedPinTheme: focusedPinTheme,
+      submittedPinTheme: submittedPinTheme,
+      validator: (s)  {
+        return  _verify(state, s) ? null : 'Pin is incorrect';
+      },
+      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+      showCursor: true,
+      onCompleted: (pin) => print(pin),
+    );
+  }
+
   void startErrorTimer() {
     errorTimer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (errorSecondsRemaining == 0) {
         setState(() {
           timer.cancel();
-          // Perform your action here
           error = false;
           errorMsg = "";
           errorSecondsRemaining = 5;
@@ -56,7 +94,6 @@ class _LoginScreenState extends State<OtpScreen> {
       if (secondsRemaining == 0) {
         setState(() {
           timer.cancel();
-          // Perform your action here
           resend = true;
         });
       } else {
@@ -67,36 +104,36 @@ class _LoginScreenState extends State<OtpScreen> {
     });
   }
 
-  Future<void> _verify(AuthState state) async {
-    if (controller.text.isEmpty || controller.text.length < 6) {
-      setState(() {
-        error = true;
-        errorMsg = '🚨📢🔔 Enter full digits of your OTP';
-      });
-      startErrorTimer();
-    } else {
+  Future<bool> _verify(AuthState state, String? s) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    if (s != null) {
+      await state.verifyOTP(s);
+    }
+    if (state.isLoading) {
       setState(() {
         isLoading = true;
       });
-
-      await state.verifyOTP(controller.text);
-      if (state.isLoading) {
-        setState(() {
-          isLoading = true;
-        });
-      } else if (state.isError) {
-        setState(() {
-          isLoading = false;
-          error = true;
-          errorMsg = state.errorMessage ?? "";
-        });
-      } else if (state.isAuthenticated) {
-        timer?.cancel();
-        errorTimer?.cancel();
-        if (!mounted) return;
+    } else if (state.isError) {
+      setState(() {
+        isLoading = false;
+        // error = true;
+        // errorMsg = state.errorMessage ?? "";
+      });
+      return false;
+    } else if (state.isAuthenticated) {
+      timer?.cancel();
+      errorTimer?.cancel();
+      if (mounted) {
         context.go('/auth/register');
       }
+
+      return true;
     }
+
+    return false;
   }
 
   void _resend(AuthState state) async {
@@ -124,24 +161,24 @@ class _LoginScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor:
-              !error ? Theme.of(context).colorScheme.surface : Colors.red,
-          title: Text(
-            errorMsg,
-            style: TextStyle(
-              fontSize: 18,
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.normal,
-            ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor:
+            !error ? Theme.of(context).colorScheme.surface : Colors.red,
+        title: Text(
+          errorMsg,
+          style: TextStyle(
+            fontSize: 18,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.normal,
           ),
         ),
-        body: JuneBuilder(
-          () => AuthState(),
-          builder: (state) => Center(
-            child: Padding(
+      ),
+      body: JuneBuilder(
+        () => AuthState(),
+        builder: (state) => Center(
+          child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -162,9 +199,7 @@ class _LoginScreenState extends State<OtpScreen> {
                     textAlign: TextAlign.center,
                   ),
                 const SizedBox(height: 50),
-                OtpField(
-                  controller: controller,
-                ),
+                buildPinPut(state),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -199,8 +234,9 @@ class _LoginScreenState extends State<OtpScreen> {
                 ),
               ],
             ),
-          )),
-        )
-        );
+          ),
+        ),
+      ),
+    );
   }
 }

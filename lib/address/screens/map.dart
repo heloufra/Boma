@@ -250,7 +250,7 @@ class _LocationScreenState extends State<LocationScreen>
     address;
     if (_userLocation != null) {
 
-      context.go('/address/confirm', extra: Addressconfirmation(userLocation: _userLocation as LatLng , addressType: _selectedType));
+      context.go('/address/edit', extra: Addressconfirmation(userLocation: _userLocation as LatLng , addressType: _selectedType));
     }
   }
 

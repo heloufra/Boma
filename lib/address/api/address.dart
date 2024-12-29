@@ -10,7 +10,7 @@ class AddressAPI {
   // Get all addresses
   Future<AddressResponse> getAddresses() async {
     try {
-      final response = await dioClient.get('/addresses/');
+      final response = await dioClient.get('/c/address/');
       final List<Address> addresses = (response.data as List)
           .map((address) => Address.fromJson(address))
           .toList();
@@ -54,7 +54,7 @@ class AddressAPI {
   }
 
   // Update address
-  Future<AddressResponse> updateAddress(String id, Address address) async {
+  Future<AddressResponse> updateAddress(int id, Address address) async {
     try {
       final response = await dioClient.put(
         '/addresses/$id/',
@@ -77,7 +77,7 @@ class AddressAPI {
   }
 
   // Delete address
-  Future<AddressResponse> deleteAddress(String id) async {
+  Future<AddressResponse> deleteAddress(int id) async {
     try {
       final response = await dioClient.delete('/addresses/$id/');
       
@@ -96,7 +96,7 @@ class AddressAPI {
   }
 
   // Set default address
-  Future<AddressResponse> setDefaultAddress(String id) async {
+  Future<AddressResponse> setDefaultAddress(int id) async {
     try {
       final response = await dioClient.post('/addresses/$id/set_default/');
       

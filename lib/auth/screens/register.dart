@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+// import 'dart:io';
 import 'package:boma/components/bbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,7 +15,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _fullNameController = TextEditingController();
-  File? _image;
+  // File? _image;
   Timer? timer;
   Timer? errorTimer;
   bool error = false;
@@ -67,7 +67,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         errorMsg = "";
       });
 
-      await state.registerUser(_fullNameController.text, "dir cdn");
+
+      await state.register(_fullNameController.text);
       if (state.isLoading) {
         setState(() {
           isLoading = true;
@@ -78,10 +79,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           error = true;
           errorMsg = state.errorMessage ?? "";
         });
-      } else if (state.isRegistered) {
+      } else if (state.isAuthenticated) {
         timer?.cancel();
         errorTimer?.cancel();
-        context.go('/auth/restaurants');
+        if (mounted) {
+           context.go('/address');
+        }
       }
     }
   }
@@ -115,38 +118,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   if (isLoading) // Show loading indicator when isLoading is true
                     CircularProgressIndicator(
                       color: Theme.of(context).colorScheme.secondary,
-                    )
-                  else
-                    GestureDetector(
-                      onTap: _pickImage,
-                      child: Container(
-                        width: 100.0,
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.amber, // Border color
-                            width: 4.0, // Border width
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          foregroundColor: Colors.amber,
-                          radius: 50,
-                          backgroundColor: Theme.of(context)
-                              .colorScheme
-                              .secondary
-                              .withOpacity(0.1),
-                          backgroundImage:
-                              _image != null ? FileImage(_image!) : null,
-                          child: _image == null
-                              ? Icon(Icons.camera_alt,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  size: 30)
-                              : null,
-                        ),
-                      ),
                     ),
-                  const SizedBox(height: 20),
+                  // else
+                  //   GestureDetector(
+                  //     onTap: _pickImage,
+                  //     child: Container(
+                  //       width: 100.0,
+                  //       height: 100.0,
+                  //       decoration: BoxDecoration(
+                  //         shape: BoxShape.circle,
+                  //         border: Border.all(
+                  //           color: Colors.amber, // Border color
+                  //           width: 4.0, // Border width
+                  //         ),
+                  //       ),
+                  //       child: CircleAvatar(
+                  //         foregroundColor: Colors.amber,
+                  //         radius: 50,
+                  //         backgroundColor: Theme.of(context)
+                  //             .colorScheme
+                  //             .secondary
+                  //             .withOpacity(0.1),
+                  //         backgroundImage:
+                  //             _image != null ? FileImage(_image!) : null,
+                  //         child: _image == null
+                  //             ? Icon(Icons.camera_alt,
+                  //                 color: Theme.of(context).colorScheme.primary,
+                  //                 size: 30)
+                  //             : null,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // const SizedBox(height: 20),
                   TextField(
                     controller: _fullNameController,
                     decoration: InputDecoration(

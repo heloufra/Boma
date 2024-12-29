@@ -1,11 +1,13 @@
-
 import 'package:boma/auth/api/api.dart';
 import 'package:june/june.dart';
+import '../../user/user.dart';
 import '../auth.dart';
 import '../types/auth.dart';
 
 class AuthState extends JuneState {
   final AuthAPI _api = AuthAPI();
+  final UserProfileAPI _user_api = UserProfileAPI();
+
   late TokenService? tokenService = TokenService();
 
   AuthStatus status = AuthStatus.authenticated;
@@ -42,7 +44,6 @@ class AuthState extends JuneState {
         errorMessage = response.message;
       }
     } catch (e) {
-      
       status = AuthStatus.error;
       errorMessage = e.toString();
     } finally {
@@ -61,7 +62,6 @@ class AuthState extends JuneState {
         smsCode: otp ?? smsCode,
       );
 
-      print(otp);
       final response = await _api.verifyOTP(credential);
 
       if (response.success) {
@@ -83,13 +83,11 @@ class AuthState extends JuneState {
     }
   }
 
-  // Sign out
   Future<void> signOut() async {
     isLoading = true;
     setState();
 
     try {
-      // Clear stored data
       final res = await _api.signOut();
       if (res.success) {
         phoneNumber = '';
@@ -100,8 +98,27 @@ class AuthState extends JuneState {
         status = AuthStatus.error;
         errorMessage = res.message;
       }
+    } catch (e) {
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+      setState();
+    }
+  }
 
-      // unstore tokens
+  Future<void> register(String name) async {
+    isLoading = true;
+    setState();
+
+    try {
+      final res = await _user_api.updateUserProfile(
+          UserProfile(name: name, email: "", language: "en"));
+      if (res.success) {
+        status = AuthStatus.authenticated;
+      } else {
+        status = AuthStatus.error;
+        errorMessage = res.message;
+      }
     } catch (e) {
       errorMessage = e.toString();
     } finally {
@@ -111,10 +128,12 @@ class AuthState extends JuneState {
   }
 
   Future<void> _saveAuthToken(String accessToken, String refreshToken) async {
-    // Implement secure token storage
-    // e.g., using flutter_secure_storage
+
+
     await tokenService?.saveTokens(
         accessToken: accessToken, refreshToken: refreshToken);
+
+    // print("Tokens have beed saved");
   }
 
   Future<void> _clearAuthToken() async {
@@ -130,8 +149,8 @@ class AuthState extends JuneState {
       // final res = await _api.registerUser(user);
 
       // if (res.success) {
-        status = AuthStatus.registered;
-        setState();
+      status = AuthStatus.authenticated;
+      setState();
       // }
     } catch (e) {
       errorMessage = e.toString();

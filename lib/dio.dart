@@ -34,7 +34,7 @@ extension StatusCodeExtension on StatusCode {
 class DioClient {
   final Dio _dio;
   final TokenService _tokenService = TokenService();
-  static const baseUrl = 'http://0.0.0.0:8000/';
+  static const baseUrl = 'http://10.53.82.140:8000/';
   
   static BaseOptions opts = BaseOptions(
     baseUrl: baseUrl,

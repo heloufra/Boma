@@ -82,7 +82,7 @@ class AddressState extends JuneState {
   }
 
   // Update existing address
-  Future<void> updateAddress(String id, Address updatedAddress) async {
+  Future<void> updateAddress(int id, Address updatedAddress) async {
     isLoading = true;
     setState();
 
@@ -109,7 +109,7 @@ class AddressState extends JuneState {
   }
 
   // Delete address
-  Future<void> deleteAddress(String id) async {
+  Future<void> deleteAddress(int id) async {
     isLoading = true;
     setState();
 
@@ -136,7 +136,7 @@ class AddressState extends JuneState {
   }
 
   // Set default address
-  Future<void> setDefaultAddress(String id) async {
+  Future<void> setDefaultAddress(int id) async {
     isLoading = true;
     setState();
 

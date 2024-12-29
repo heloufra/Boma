@@ -30,11 +30,11 @@ class Btextfield extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(12),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
+          borderSide: const BorderSide(color: Colors.red),
           borderRadius: BorderRadius.circular(12),
         ),
       ),

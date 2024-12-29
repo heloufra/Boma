@@ -178,14 +178,14 @@ class _ConfirmAddressState extends State<ConfirmAddress> {
     final currentType = _addressTypes[_selectedAddressType]!;
 
     return Scaffold(
-      appBar: AppBar(
+       appBar: AppBar(
         automaticallyImplyLeading:  error ? false : true,
         backgroundColor:
             !error ? Theme.of(context).colorScheme.surface : Colors.red,
         title: Text(
-          errorMsg,
+          errorMsg == "" ?  "Add New Address" :  errorMsg,
           style: TextStyle(
-            fontSize: 18,
+            fontSize:  errorMsg == "" ?  24:  18,
             color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.normal,
           ),

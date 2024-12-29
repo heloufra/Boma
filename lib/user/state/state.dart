@@ -1,3 +1,4 @@
+
 import 'package:june/june.dart';
 import '../api/api.dart';
 import '../type/user.dart';
@@ -16,19 +17,22 @@ class UserProfileState extends JuneState {
   String? errorMessage;
   bool isLoading = false;
   UserProfile? userProfile; 
-
+  
+  bool get isLoaded => status == UserProfileStatus.loaded;
   bool get isInitial => status == UserProfileStatus.initial;
   bool get isError => status == UserProfileStatus.error;
- 
+  UserProfile? get user => userProfile;
   Future<void> getUserProfile() async {
     isLoading = true;
     setState();
 
     try {
       final response = await _api.getUserResponse();
-
+    
       if (response.success) {
-        userProfile = response.userProfile;
+
+          userProfile = UserProfile.fromJson(response.response?.data as Map<String, dynamic>);
+    
         status = UserProfileStatus.loaded;
       } else {
         status = UserProfileStatus.error;
@@ -41,6 +45,10 @@ class UserProfileState extends JuneState {
       isLoading = false;
       setState();
     }
+  }
+
+  Future<void> signOut() async {
+      return ;
   }
 
   Future<void> updateUserProfile(UserProfile userProfile) async {

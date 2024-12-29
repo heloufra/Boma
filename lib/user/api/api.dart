@@ -9,8 +9,7 @@ class UserProfileAPI {
   Future<UserProfileResponse> getUserResponse() async {
     try {
       final response = await dioClient.get('/c/account/');
-      final UserProfile user = (response.data as UserProfile);
-          
+      final UserProfile user = UserProfile.fromJson(response.data as Map<String, dynamic>);
 
       return UserProfileResponse(
         success: true,
@@ -28,6 +27,7 @@ class UserProfileAPI {
   }
 
   Future<UserProfileResponse> updateUserProfile( UserProfile user) async {
+    // print("About to create a request to update user profile ");
     try {
       final response = await dioClient.put(
         '/c/account/',
