@@ -64,7 +64,7 @@ class _LoginScreenState extends State<OtpScreen> {
       focusedPinTheme: focusedPinTheme,
       submittedPinTheme: submittedPinTheme,
       validator: (s)  {
-        return  _verify(state, s) ? null : 'Pin is incorrect';
+        return  _verify(state, s) as bool ? null : 'Pin is incorrect';
       },
       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
       showCursor: true,
@@ -226,7 +226,7 @@ class _LoginScreenState extends State<OtpScreen> {
                       child: BButton(
                         text: 'Verify',
                         onTap: () {
-                          _verify(state);
+                          _verify(state, "4444444");
                         },
                       ),
                     ),
