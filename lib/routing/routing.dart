@@ -10,6 +10,8 @@ import 'package:boma/restaurants/screens/home.dart';
 import 'package:boma/routing/notifiers.dart';
 import 'package:boma/routing/observer.dart';
 
+import '../address/screens/confirm_edit.dart';
+
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey =
@@ -52,14 +54,8 @@ final godRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/auth',
-          // pageBuilder: (context, state) {
-          //   // const AddressEvent event = AddressEvent.add;
-          //   //    return buildPageWithTransition(context, state, const AddressInputScreen(event: event,));
-          //      return AddressListScreen();
-          // },
-          pageBuilder: (context, state) =>
-              buildPageWithTransition(context, state, AddressListScreen()),
-
+          pageBuilder: (context, state) => buildPageWithTransition(
+              context, state, const AddressListScreen()),
           routes: [
             GoRoute(
               path: 'login',
@@ -103,8 +99,6 @@ final godRouter = GoRouter(
           builder: (context, state) {
             return const AddressManagementScreen();
           },
-          // pageBuilder: (context, state) =>
-          //     buildPageWithTransition(context, state, AddressListScreen()),
           routes: [
             GoRoute(
                 path: 'add',
@@ -115,12 +109,19 @@ final godRouter = GoRouter(
                   GoRoute(
                     path: 'confirm',
                     builder: (context, state) {
-                      // Addressconfirmation confirm =
-                      // state.extra as Addressconfirmation;
-                      return const ConfirmAddress();
+                      Addressconfirmation confirm =
+                          state.extra as Addressconfirmation;
+                      return ConfirmAddressAdd(addressconfirmation: confirm);
                     },
                   ),
                 ]),
+            GoRoute(
+                path: '/edit',
+                builder: (context, state) {
+                  Addressconfirmation confirm =
+                      state.extra as Addressconfirmation;
+                  return ConfirmAddressEdit(addressconfirmation: confirm);
+                }),
             GoRoute(
               path: '/view-address',
               builder: (context, state) {
@@ -130,8 +131,8 @@ final godRouter = GoRouter(
             ),
             GoRoute(
               path: 'edit',
-              pageBuilder: (context, state) =>
-                  buildPageWithTransition(context, state, AddressEditScreen()),
+              pageBuilder: (context, state) => buildPageWithTransition(
+                  context, state, const AddressEditScreen()),
             ),
           ],
         ),

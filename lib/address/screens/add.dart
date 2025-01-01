@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../types/address.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({super.key});
@@ -43,8 +43,8 @@ class AddressInputScreenState extends State<AddAddress> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not get location: $e')),
-      );
+          SnackBar(content: Text('Could not get location: $e')),
+        );
       }
     } finally {
       setState(() => _isLoadingLocation = false);
@@ -132,7 +132,6 @@ class AddressInputScreenState extends State<AddAddress> {
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
-
                   Expanded(
                     child: Align(
                       alignment:
@@ -158,15 +157,12 @@ class AddressInputScreenState extends State<AddAddress> {
                       ),
                     ),
                   ),
-
-                  // Balance for the back button with SizedBox
                   const SizedBox(width: 48),
                 ],
               ),
             ),
           ),
 
-          // Current Location Button
           Positioned(
             right: 16,
             bottom: 300,
@@ -187,7 +183,9 @@ class AddressInputScreenState extends State<AddAddress> {
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
                 onPressed: () {
-                   context.go("/address/add/confirm");
+                  Addressconfirmation confirm =
+                      Addressconfirmation(userLocation: _selectedLocation, caller: ConfirmCaller.add);
+                  context.go("/address/add/confirm", extra: confirm);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -205,29 +203,6 @@ class AddressInputScreenState extends State<AddAddress> {
               ),
             ),
           ),
-          // Positioned(
-          //   right: 160,
-          //   bottom: 300,
-          //   child: ElevatedButton(
-          //     onPressed: () {
-          //       // context.go("address/confirm");
-          //     },
-          //     style: ElevatedButton.styleFrom(
-          //       backgroundColor: Theme.of(context).colorScheme.secondary,
-          //       padding: const EdgeInsets.symmetric(vertical: 16),
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(12),
-          //       ),
-          //     ),
-          //     child: Text(
-          //       'Confirm Location',
-          //       style: TextStyle(
-          //           fontSize: 16,
-          //           color: Theme.of(context).colorScheme.primary),
-          //     ),
-          //   ),
-          // ),
-          // Bottom Sheet
         ],
       ),
     );

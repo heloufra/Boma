@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class RouteCard extends StatelessWidget {
+  const RouteCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -36,11 +38,11 @@ class RouteCard extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
-                          const Icon(Icons.play_arrow, color: Colors.red, size: 18),
-                          const SizedBox(width: 4),
-                          const Text(
+                          Icon(Icons.play_arrow, color: Colors.red, size: 18),
+                          SizedBox(width: 4),
+                          Text(
                             'Start',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
@@ -75,17 +77,17 @@ class RouteCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       '2km od Ciebie',
                       style: TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Łatwa - Asfaltowa',
                       style: TextStyle(
                         color: Colors.grey,

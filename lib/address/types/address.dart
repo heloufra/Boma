@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-enum MarkerMapsCaller {
+enum ConfirmCaller {
   add,
   edit,
   view,
@@ -101,10 +101,10 @@ class AddressResponse {
 
 class Addressconfirmation {
   final LatLng userLocation;
-  final String addressType;
+  final ConfirmCaller caller;
 
-  Addressconfirmation(LatLng latLng, {
+  const Addressconfirmation({
     required this.userLocation,
-    required this.addressType
+    required this.caller
   });
 }

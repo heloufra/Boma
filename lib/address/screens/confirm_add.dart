@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import '../types/address.dart';
 
-class  ConfirmAddress extends StatefulWidget {
-   const ConfirmAddress({super.key});
+class ConfirmAddressAdd extends StatefulWidget {
+  final Addressconfirmation addressconfirmation;
+  const ConfirmAddressAdd({super.key, required this.addressconfirmation});
   @override
   State<StatefulWidget> createState() {
     return _ConfirmAddress();
   }
 }
 
-class _ConfirmAddress extends State<ConfirmAddress> {
+class _ConfirmAddress extends State<ConfirmAddressAdd> {
   String _selectedAddressType = 'Apartment';
   final _formKey = GlobalKey<FormState>();
   final _labelController = TextEditingController();
@@ -27,8 +29,7 @@ class _ConfirmAddress extends State<ConfirmAddress> {
     );
   }
 
-
-   Widget _buildForm() {
+  Widget _buildForm() {
     return Form(
       key: _formKey,
       child: Column(
@@ -133,7 +134,7 @@ class _ConfirmAddress extends State<ConfirmAddress> {
     );
   }
 
-   final Map<String, Map<String, dynamic>> _addressTypes = {
+  final Map<String, Map<String, dynamic>> _addressTypes = {
     'Apartment': {
       'label': 'Apartment',
       'icon': Icons.apartment,
@@ -211,19 +212,24 @@ class _ConfirmAddress extends State<ConfirmAddress> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Confirm Address"),
-      //   leading: IconButton(onPressed: () {
-      //     // context.go.op
-      //   }, icon: const Icon(Icons.back_hand)),
+        //   leading: IconButton(onPressed: () {
+        //     // context.go.op
+        //   }, icon: const Icon(Icons.back_hand)),
       ),
-      body: Column(children: [Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildForm(),
-      )],),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _buildForm(),
+          )
+        ],
+      ),
     );
   }
 }
