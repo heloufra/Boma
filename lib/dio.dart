@@ -35,7 +35,7 @@ class DioClient {
   final Dio _dio;
   final TokenService _tokenService = TokenService();
 
-  static const baseUrl = 'http://10.53.82.140:8000/';
+  static const baseUrl = 'http://192.168.1.3:8000/';
   
   static BaseOptions opts = BaseOptions(
     baseUrl: baseUrl,

@@ -1,5 +1,3 @@
-// lib/address/services/address_api.dart
-
 import 'package:boma/address/types/address.dart';
 import 'package:boma/dio.dart';
 import 'package:dio/dio.dart';
@@ -7,7 +5,6 @@ import 'package:dio/dio.dart';
 class AddressAPI {
   final dioClient = DioClient();
 
-  // Get all addresses
   Future<AddressResponse> getAddresses() async {
     try {
       final response = await dioClient.get('/c/address/');
@@ -30,7 +27,6 @@ class AddressAPI {
     }
   }
 
-  // Add new address
   Future<AddressResponse> addAddress(Address address) async {
     try {
       final response = await dioClient.post(
@@ -53,7 +49,6 @@ class AddressAPI {
     }
   }
 
-  // Update address
   Future<AddressResponse> updateAddress(int id, Address address) async {
     try {
       final response = await dioClient.put(
@@ -76,7 +71,6 @@ class AddressAPI {
     }
   }
 
-  // Delete address
   Future<AddressResponse> deleteAddress(int id) async {
     try {
       final response = await dioClient.delete('/addresses/$id/');
@@ -95,7 +89,6 @@ class AddressAPI {
     }
   }
 
-  // Set default address
   Future<AddressResponse> setDefaultAddress(int id) async {
     try {
       final response = await dioClient.post('/addresses/$id/set_default/');

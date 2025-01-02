@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:boma/address/types/address.dart';
+import 'package:boma/address/address.dart';
 import 'package:boma/components/bbutton.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,7 +9,8 @@ import 'package:location/location.dart';
 import 'package:flutter/services.dart';
 
 class LocationScreen extends StatefulWidget {
-  const LocationScreen({super.key});
+  final MarkerMapsCaller caller;
+  const LocationScreen({super.key, required this.caller});
 
   @override
   _LocationScreenState createState() => _LocationScreenState();
@@ -18,33 +19,29 @@ class LocationScreen extends StatefulWidget {
 class _LocationScreenState extends State<LocationScreen>
     with SingleTickerProviderStateMixin {
   final Location _location = Location();
-   LatLng? _userLocation;
-  String selectedType = 'house';
+  LatLng? _userLocation;
   String _selectedType = 'house';
   late Animation<double> _slideAnimation;
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
   static late String _mapStyleString;
 
-  // Controllers
-  final Completer<GoogleMapController> _controllerMap = Completer();
+  final Completer<GoogleMapController> _controllerMap = Completer(); // ?
 
-  late GoogleMapController _mapController;
+  late GoogleMapController _mapController; // ?
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _floorNumberController = TextEditingController();
   final TextEditingController _homeNumberController = TextEditingController();
   late AnimationController _slideController;
 
-  // late BitmapDescriptor bd;
-
   ByteData? imageData;
+  Marker? marker;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkPermissionsAndGetLocation();
-      _futurebd();
       rootBundle.loadString('assets/map_style.json').then((string) {
         _mapStyleString = string;
       });
@@ -67,13 +64,6 @@ class _LocationScreenState extends State<LocationScreen>
     _floorNumberController.dispose();
     _homeNumberController.dispose();
     super.dispose();
-  }
-
-  Future<void> _futurebd() async {
-    // BitmapDescriptor fbd = await getCustomIcon();
-    // setState(() {
-    //   bd = fbd;
-    // });
   }
 
   Future<void> _checkPermissionsAndGetLocation() async {
@@ -103,11 +93,23 @@ class _LocationScreenState extends State<LocationScreen>
     });
   }
 
-  addHomeMarker() {
-    return BitmapDescriptor.bytes(
-        imageData?.buffer.asUint8List() ?? Uint8List(2),
-        height: 100,
-        width: 110);
+  void addHomeMarker() {
+    setState(() {
+      marker = Marker(
+          icon: BitmapDescriptor.bytes(
+              imageData?.buffer.asUint8List() ?? Uint8List(2),
+              height: 100,
+              width: 110),
+          markerId: const MarkerId('userLocation'),
+          position: _userLocation ??
+              const LatLng(32.22153850282008, -7.938427631369669),
+          draggable: false,
+          onDragEnd: (newPosition) {
+            setState(() {
+              _userLocation = newPosition;
+            });
+          });
+    });
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -130,6 +132,28 @@ class _LocationScreenState extends State<LocationScreen>
       parent: _slideController,
       curve: Curves.linear,
     ));
+  }
+
+  void _onConfirm() {
+    final address = {
+      'street': _streetController.text,
+      'number': _homeNumberController.text,
+      'city': "Beng",
+      'latitude': _userLocation?.latitude,
+      'longitude': _userLocation?.longitude,
+    };
+    address;
+    if (widget.caller == MarkerMapsCaller.add) {
+      context.go("/address/add");
+    } 
+    else if (widget.caller == MarkerMapsCaller.edit) {
+      // context.go('/address/edit',
+      //     extra: Addressconfirmation(
+      //         userLocation: _userLocation as LatLng,
+      //         addressType: _selectedType));
+    } else {
+      context.go('/address/view');
+    }
   }
 
   @override
@@ -155,19 +179,7 @@ class _LocationScreenState extends State<LocationScreen>
                     const LatLng(32.22153850282008, -7.938427631369669),
                 zoom: 18,
               ),
-              markers: {
-                Marker(
-                    icon: addHomeMarker(),
-                    markerId: const MarkerId('userLocation'),
-                    position: _userLocation ??
-                        const LatLng(32.22153850282008, -7.938427631369669),
-                    draggable: false,
-                    onDragEnd: (newPosition) {
-                      setState(() {
-                        _userLocation = newPosition;
-                      });
-                    })
-              },
+              markers: {marker as Marker},
               onCameraMove: (position) {
                 setState(() {
                   _userLocation = position.target;
@@ -192,13 +204,6 @@ class _LocationScreenState extends State<LocationScreen>
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20),
                     ),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: colorScheme.secondary,
-                    //     blurRadius: 10,
-                    //     offset: const Offset(0, -2),
-                    //   ),
-                    // ],
                   ),
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(20),
@@ -237,21 +242,6 @@ class _LocationScreenState extends State<LocationScreen>
         ],
       ),
     );
-  }
-
-  void _onConfirm() {
-    final address = {
-      'street': _streetController.text,
-      'number': _homeNumberController.text,
-      'city': "Beng",
-      'latitude': _userLocation?.latitude,
-      'longitude': _userLocation?.longitude,
-    };
-    address;
-    if (_userLocation != null) {
-
-      context.go('/address/edit', extra: Addressconfirmation(userLocation: _userLocation as LatLng , addressType: _selectedType));
-    }
   }
 
   Widget _buildAddressTypeCard(String type, IconData icon) {

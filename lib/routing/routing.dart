@@ -1,7 +1,8 @@
+import 'package:boma/address/list.dart';
+import 'package:boma/address/screens/view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:june/june.dart';
-
 import 'package:boma/auth/auth.dart';
 import 'package:boma/user/user.dart';
 import 'package:boma/address/address.dart';
@@ -13,8 +14,6 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'shell');
-
-/// redirection need to be changed because it is dummy
 
 CustomTransitionPage<T> buildPageWithTransition<T>(
     BuildContext context, GoRouterState state, Widget child) {
@@ -38,7 +37,7 @@ final godRouter = GoRouter(
     if (authState.isAuthenticated) {
       return state.uri.toString();
     } else {
-      if (state.uri.toString().startsWith("/auth")) {
+      if (state.uri.toString().startsWith("/address")) {
         return state.uri.toString();
       }
       return "/auth";
@@ -53,8 +52,14 @@ final godRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/auth',
+          // pageBuilder: (context, state) {
+          //   // const AddressEvent event = AddressEvent.add;
+          //   //    return buildPageWithTransition(context, state, const AddressInputScreen(event: event,));
+          //      return AddressListScreen();
+          // },
           pageBuilder: (context, state) =>
-              buildPageWithTransition(context, state, const LoginScreen()),
+              buildPageWithTransition(context, state, AddressListScreen()),
+
           routes: [
             GoRoute(
               path: 'login',
@@ -96,35 +101,37 @@ final godRouter = GoRouter(
         GoRoute(
           path: '/address',
           builder: (context, state) {
-            return const LocationScreen();
+            return const AddressManagementScreen();
           },
-          pageBuilder: (context, state) {
-            return buildPageWithTransition(
-                context, state, const LocationScreen());
-          },
+          // pageBuilder: (context, state) =>
+          //     buildPageWithTransition(context, state, AddressListScreen()),
           routes: [
             GoRoute(
-              path: 'new',
-              builder: (context, state) {
-                // return  ConfirmAddress(userLocation: userLocation, onConfirmAddress: (Map<String, dynamic> o) => {},);
-                return const LocationScreen();
-              },
-            ),
+                path: 'add',
+                builder: (context, state) {
+                  return const AddAddress();
+                },
+                routes: [
+                  GoRoute(
+                    path: 'confirm',
+                    builder: (context, state) {
+                      // Addressconfirmation confirm =
+                      // state.extra as Addressconfirmation;
+                      return const ConfirmAddress();
+                    },
+                  ),
+                ]),
             GoRoute(
-              path: 'confirm',
+              path: '/view-address',
               builder: (context, state) {
-                Addressconfirmation confirm =
-                    state.extra as Addressconfirmation;
-                return ConfirmAddress(confirm: confirm);
+                final address = state.extra as Address;
+                return ViewAddressScreen(address: address);
               },
             ),
             GoRoute(
               path: 'edit',
-              builder: (context, state) {
-                Addressconfirmation confirm =
-                    state.extra as Addressconfirmation;
-                return EditAddressScreen(confirm: confirm);
-              },
+              pageBuilder: (context, state) =>
+                  buildPageWithTransition(context, state, AddressEditScreen()),
             ),
           ],
         ),
