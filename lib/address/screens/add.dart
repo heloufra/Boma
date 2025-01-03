@@ -8,10 +8,10 @@ class AddAddress extends StatefulWidget {
   const AddAddress({super.key});
 
   @override
-  AddressInputScreenState createState() => AddressInputScreenState();
+  AddAddressState createState() => AddAddressState();
 }
 
-class AddressInputScreenState extends State<AddAddress> {
+class AddAddressState extends State<AddAddress> {
   LatLng _selectedLocation =
       const LatLng(32.22017044487108, -7.939553250867446);
 

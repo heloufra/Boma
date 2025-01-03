@@ -27,8 +27,8 @@ class AddressState extends JuneState {
   bool get isInitial => status == AddressStatus.initial;
   bool get isError => status == AddressStatus.error;
   bool get hasSelectedAddress => selectedAddress != null;
-  Address? get defaultAddress => 
-      addresses.firstWhere((address) => address.isDefault == true, orElse: () => addresses.first);
+  // Address? get defaultAddress => 
+  //     addresses.firstWhere((address) => address.isDefault == true, orElse: () => addresses.first);
 
   // Fetch all addresses
   Future<void> fetchAddresses() async {
@@ -144,15 +144,15 @@ class AddressState extends JuneState {
 
       if (response.success) {
         // Update isDefault status for all addresses
-        for (var address in addresses) {
-          if (address.id == id) {
-            final index = addresses.indexOf(address);
-            addresses[index] = address.copyWith(isDefault: true);
-          } else {
-            final index = addresses.indexOf(address);
-            addresses[index] = address.copyWith(isDefault: false);
-          }
-        }
+        // for (var address in addresses) {
+        //   if (address.id == id) {
+        //     final index = addresses.indexOf(address);
+        //     addresses[index] = address.copyWith(isDefault: true);
+        //   } else {
+        //     final index = addresses.indexOf(address);
+        //     addresses[index] = address.copyWith(isDefault: false);
+        //   }
+        // }
         status = AddressStatus.updated;
       } else {
         status = AddressStatus.error;

@@ -20,10 +20,10 @@ class _ViewAddressScreenState extends State<ViewAddressScreen> {
     super.initState();
     markers.add(
       Marker(
-        markerId: MarkerId(widget.address.id?.toString() ?? ''),
+        markerId: MarkerId(widget.address.id.toString() ),
         position: LatLng(
-          double.parse(widget.address.latitude),
-          double.parse(widget.address.longitude),
+         widget.address.latitude,
+         widget.address.longitude,
         ),
       ),
     );
@@ -51,8 +51,8 @@ class _ViewAddressScreenState extends State<ViewAddressScreen> {
                     child: GoogleMap(
                       initialCameraPosition: CameraPosition(
                         target: LatLng(
-                          double.parse(widget.address.latitude),
-                          double.parse(widget.address.longitude),
+                          widget.address.latitude,
+                          widget.address.longitude,
                         ),
                         zoom: 15,
                       ),
@@ -120,7 +120,7 @@ class _ViewAddressScreenState extends State<ViewAddressScreen> {
                           ),
                         ),
                       ),
-                      if (widget.address.isDefault == true)
+                      // if (widget.address.isDefault == true)
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,

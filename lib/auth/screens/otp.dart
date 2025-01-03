@@ -68,7 +68,7 @@ class _LoginScreenState extends State<OtpScreen> {
       },
       pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
       showCursor: true,
-      onCompleted: (pin) => print(pin),
+      onCompleted: (pin) => (pin),
     );
   }
 

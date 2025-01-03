@@ -14,7 +14,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   void signout(BuildContext context, AuthState state) async {
     await state.signOut();
+    if (!mounted) return;
+   
     context.go('/auth/login');
+    
   }
   @override
   Widget build(BuildContext context) {

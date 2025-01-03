@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../types/address.dart';
 
 class ConfirmAddressEdit extends StatefulWidget {
-  final Addressconfirmation addressconfirmation;
-  const ConfirmAddressEdit({super.key, required this.addressconfirmation});
+ final Address address;
+  const ConfirmAddressEdit({super.key, required this.address});
   @override
   State<StatefulWidget> createState() {
     return _ConfirmAddress();
@@ -16,8 +16,20 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
   final _labelController = TextEditingController();
   final _streetController = TextEditingController();
   final _houseNumberController = TextEditingController();
+  final _buildingNumberController = TextEditingController();
   final _floorController = TextEditingController();
   final _apartmentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _labelController.text = widget.address.name;
+    _streetController.text = widget.address.fullAddress;
+    _houseNumberController.text = widget.address.apartmentNumber ?? "";
+    _apartmentController.text = widget.address.apartmentNumber ?? "";
+    _floorController.text = widget.address.floorNumber ?? "";
+    _buildingNumberController.text = widget.address.buildingNumber ?? "";
+  }
 
   InputDecoration _getInputDecoration(String label) {
     return InputDecoration(
@@ -218,9 +230,6 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Confirm Address"),
-        //   leading: IconButton(onPressed: () {
-        //     // context.go.op
-        //   }, icon: const Icon(Icons.back_hand)),
       ),
       body: Column(
         children: [

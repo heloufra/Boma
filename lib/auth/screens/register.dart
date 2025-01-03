@@ -23,18 +23,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isLoading = false;
   TextEditingController controller = TextEditingController();
   int errorSecondsRemaining = 5;
-  Future<void> _pickImage() async {
-    // final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+  // Future<void> _pickImage() async {
+  //   // final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
 
-    // setState(() {
-    //   if (pickedFile != null) {
-    //     _image = File(pickedFile.path);
-    //   } else {
-    //     error = true;
-    //     errorMsg = 'No image selected';
-    //   }
-    // });
-  }
+  //   // setState(() {
+  //   //   if (pickedFile != null) {
+  //   //     _image = File(pickedFile.path);
+  //   //   } else {
+  //   //     error = true;
+  //   //     errorMsg = 'No image selected';
+  //   //   }
+  //   // });
+  // }
   void startErrorTimer() {
     errorTimer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (errorSecondsRemaining == 0) {

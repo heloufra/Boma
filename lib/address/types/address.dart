@@ -14,36 +14,45 @@ enum AddressEvent {
 }
 
 class Address {
-  final int? id;
+  final int id;
   final String name;
   final String type;
   final String city;
   final String fullAddress;
-  final String latitude;
-  final String longitude;
-  final bool? isDefault;
+  final double latitude;
+  final double longitude;
+  final String? streetName;
+  final String? buildingNumber;
+  final String? floorNumber;
+  final String? apartmentNumber;
 
   Address({
-    this.id,
+    required this.id,
     required this.name,
     required this.type,
     required this.city,
     required this.fullAddress,
     required this.latitude,
     required this.longitude,
-    this.isDefault,
+    this.streetName,
+    this.buildingNumber,
+    this.floorNumber,
+    this.apartmentNumber,
   });
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      id: json['id'],
-      name: json['name'],
-      type: json['type'],
-      city: json['city'],
-      fullAddress: json['full_address'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      isDefault: json['is_default'],
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      type: json['type'] as String,
+      city: json['city'] as String,
+      fullAddress: json['full_address'] as String,
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      streetName: json['street_name'] as String?,
+      buildingNumber: json['building_number'] as String?,
+      floorNumber: json['floor_number'] as String?,
+      apartmentNumber: json['apartment_number'] as String?,
     );
   }
 
@@ -56,31 +65,14 @@ class Address {
       'full_address': fullAddress,
       'latitude': latitude,
       'longitude': longitude,
-      'is_default': isDefault,
+      'street_name': streetName,
+      'building_number': buildingNumber,
+      'floor_number': floorNumber,
+      'apartment_number': apartmentNumber,
     };
   }
 
-  Address copyWith({
-    int? id,
-    String? name,
-    String? type,
-    String? city,
-    String? fullAddress,
-    String? latitude,
-    String? longitude,
-    bool? isDefault,
-  }) {
-    return Address(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      type: type ?? this.type,
-      city: city ?? this.city,
-      fullAddress: fullAddress ?? this.fullAddress,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      isDefault: isDefault ?? this.isDefault,
-    );
-  }
+  LatLng getLatLng() { return LatLng(latitude, longitude);}
 }
 
 class AddressResponse {

@@ -5,7 +5,7 @@ import '../types/auth.dart';
 
 class AuthState extends JuneState {
   final AuthAPI _api = AuthAPI();
-  final UserProfileAPI _user_api = UserProfileAPI();
+  final UserProfileAPI _userApi = UserProfileAPI();
 
   late TokenService? tokenService = TokenService();
 
@@ -110,7 +110,7 @@ class AuthState extends JuneState {
     setState();
 
     try {
-      final res = await _user_api.updateUserProfile(
+      final res = await _userApi.updateUserProfile(
           UserProfile(name: name, email: "", language: "en"));
       if (res.success) {
         status = AuthStatus.authenticated;

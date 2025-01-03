@@ -7,8 +7,6 @@ class UserProfile {
 
   UserProfile(
       {required this.name, required this.email, required this.language});
-  
-  // name: json['name'] ?? "name", email: json['email'] ?? "email", language: json['language'] ?? "language");
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
@@ -31,6 +29,5 @@ class UserProfileResponse {
     required this.message,
     this.response,
     this.userProfile,
-    
   });
 }
