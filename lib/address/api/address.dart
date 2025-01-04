@@ -30,7 +30,7 @@ class AddressAPI {
   Future<AddressResponse> addAddress(Address address) async {
     try {
       final response = await dioClient.post(
-        '/addresses/',
+        '/c/addresses/',
         data: address.toJson(),
       );
 
@@ -52,7 +52,7 @@ class AddressAPI {
   Future<AddressResponse> updateAddress(int id, Address address) async {
     try {
       final response = await dioClient.put(
-        '/addresses/$id/',
+        '/c/addresses/$id/',
         data: address.toJson(),
       );
 
@@ -73,7 +73,7 @@ class AddressAPI {
 
   Future<AddressResponse> deleteAddress(int id) async {
     try {
-      final response = await dioClient.delete('/addresses/$id/');
+      final response = await dioClient.delete('/c/addresses/$id/');
       
       return AddressResponse(
         success: true,
@@ -89,22 +89,22 @@ class AddressAPI {
     }
   }
 
-  Future<AddressResponse> setDefaultAddress(int id) async {
-    try {
-      final response = await dioClient.post('/addresses/$id/set_default/');
+  // Future<AddressResponse> setDefaultAddress(int id) async {
+  //   try {
+  //     final response = await dioClient.post('/addresses/$id/set_default/');
       
-      return AddressResponse(
-        success: true,
-        message: 'Default address set successfully',
-        response: response,
-        address: Address.fromJson(response.data),
-      );
-    } on DioException catch (e) {
-      String message = DioClient.handleDioError(e);
-      return AddressResponse(
-        success: false,
-        message: '🚨📢🔔 $message',
-      );
-    }
-  }
+  //     return AddressResponse(
+  //       success: true,
+  //       message: 'Default address set successfully',
+  //       response: response,
+  //       address: Address.fromJson(response.data),
+  //     );
+  //   } on DioException catch (e) {
+  //     String message = DioClient.handleDioError(e);
+  //     return AddressResponse(
+  //       success: false,
+  //       message: '🚨📢🔔 $message',
+  //     );
+  //   }
+  // }
 }
