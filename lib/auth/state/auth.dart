@@ -111,7 +111,7 @@ class AuthState extends JuneState {
 
     try {
       final res = await _userApi.updateUserProfile(
-          UserProfile(name: name, email: "", language: "en"));
+          UserProfile(name: name, email: "email@email.com", language: "en"));
       if (res.success) {
         status = AuthStatus.authenticated;
       } else {
@@ -127,12 +127,8 @@ class AuthState extends JuneState {
   }
 
   Future<void> _saveAuthToken(String accessToken, String refreshToken) async {
-
-
     await tokenService?.saveTokens(
         accessToken: accessToken, refreshToken: refreshToken);
-
-    // print("Tokens have beed saved");
   }
 
   Future<void> _clearAuthToken() async {
