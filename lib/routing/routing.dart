@@ -129,9 +129,10 @@ final godRouter = GoRouter(
             ),
             GoRoute(
               path: '/view-address',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 final address = state.extra as Address;
-                return ViewAddressScreen(address: address);
+                return buildPageWithTransition(
+                    context, state,  ViewAddressScreen(address: address));
               },
             ),
           ],
