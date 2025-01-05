@@ -14,7 +14,7 @@ enum AddressEvent {
 }
 
 class Address {
-  final int id;
+  final int? id;
   final String name;
   final String type;
   final String city;
@@ -27,7 +27,7 @@ class Address {
   final String? apartmentNumber;
 
   Address({
-    required this.id,
+     this.id,
     required this.name,
     required this.type,
     required this.city,
@@ -42,13 +42,13 @@ class Address {
 
   factory Address.fromJson(Map<String, dynamic> json) {
     return Address(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       name: json['name'] as String,
       type: json['type'] as String,
       city: json['city'] as String,
       fullAddress: json['full_address'] as String,
-      latitude: (json['latitude'] as num).toDouble(),
-      longitude: (json['longitude'] as num).toDouble(),
+      latitude: double.parse(json['latitude'] as String),
+      longitude: double.parse(json['longitude'] as String),
       streetName: json['street_name'] as String?,
       buildingNumber: json['building_number'] as String?,
       floorNumber: json['floor_number'] as String?,
@@ -98,5 +98,16 @@ class Addressconfirmation {
   const Addressconfirmation({
     required this.userLocation,
     required this.caller
+  });
+}
+
+
+class EditAddressconfirmation {
+  final LatLng userLocation;
+  final Address address;
+
+  const EditAddressconfirmation({
+    required this.userLocation,
+    required this.address
   });
 }
