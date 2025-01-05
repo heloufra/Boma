@@ -1,4 +1,3 @@
-import 'package:boma/address/screens/view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:june/june.dart';
@@ -8,7 +7,6 @@ import 'package:boma/address/address.dart';
 import 'package:boma/routing/notifiers.dart';
 import 'package:boma/routing/observer.dart';
 
-import '../address/screens/confirm_edit.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -30,14 +28,14 @@ CustomTransitionPage<T> buildPageWithTransition<T>(
 }
 
 final godRouter = GoRouter(
-  initialLocation: '/address',
+  initialLocation: '/auth',
   navigatorKey: _rootNavigatorKey,
   redirect: (context, state) {
     var authState = June.getState(() => AuthState());
     if (authState.isAuthenticated) {
       return state.uri.toString();
     } else {
-      if (state.uri.toString().startsWith("/address")) {
+      if (state.uri.toString().startsWith("/auth")) {
         return state.uri.toString();
       }
       return "/auth";
@@ -53,7 +51,7 @@ final godRouter = GoRouter(
         GoRoute(
           path: '/auth',
           pageBuilder: (context, state) => buildPageWithTransition(
-              context, state, const AddressManagementScreen()),
+              context, state, const LoginScreen()),
           routes: [
             GoRoute(
               path: 'login',
@@ -123,8 +121,8 @@ final godRouter = GoRouter(
                 GoRoute(
                   path: '/confirm',
                   builder: (context, state) {
-                    Address address = state.extra as Address;
-                    return ConfirmAddressEdit(address: address);
+                    EditAddressconfirmation address = state.extra as EditAddressconfirmation;
+                    return ConfirmAddressEdit(data: address);
                   },
                 ),
               ],
