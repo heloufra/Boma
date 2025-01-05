@@ -1,23 +1,16 @@
 import 'package:june/june.dart';
 import '../address.dart';
 
-enum AddressStatus {
-  initial,
-  loading,
-  loaded,
-  error,
-  updated,
-  deleted
-}
+enum AddressStatus { initial, loading, loaded, error, updated, deleted }
 
 class AddressState extends JuneState {
   final AddressAPI _api = AddressAPI();
-
   AddressStatus status = AddressStatus.initial;
   List<Address> _addresses = [];
   Address? selectedAddress;
   String? errorMessage;
   bool isLoading = false;
+  int? _defaultAddressId;
 
   bool get hasAddresses => addresses.isNotEmpty;
   bool get isInitial => status == AddressStatus.initial;
@@ -25,6 +18,23 @@ class AddressState extends JuneState {
   bool get hasSelectedAddress => selectedAddress != null;
   bool get isLoaded => status == AddressStatus.loaded;
   List<Address> get addresses => _addresses;
+
+  Address? get defaultAddress {
+    if (_defaultAddressId == null) return null;
+    try {
+      return _addresses
+          .firstWhere((address) => address.id == _defaultAddressId);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void setDefaultAddress(int id) {
+    if (_addresses.any((address) => address.id == id)) {
+      _defaultAddressId = id;
+      setState();
+    }
+  }
 
   Future<void> fetchAddresses() async {
     isLoading = true;
@@ -36,6 +46,9 @@ class AddressState extends JuneState {
       if (response.success) {
         _addresses = response.addresses ?? [];
         status = AddressStatus.loaded;
+        if (_addresses.isNotEmpty && _defaultAddressId == null) {
+          _defaultAddressId = _addresses.first.id;
+        }
       } else {
         status = AddressStatus.error;
         errorMessage = response.message;
