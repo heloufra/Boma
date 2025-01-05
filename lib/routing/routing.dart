@@ -7,7 +7,6 @@ import 'package:boma/address/address.dart';
 import 'package:boma/routing/notifiers.dart';
 import 'package:boma/routing/observer.dart';
 
-
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey =
@@ -50,8 +49,8 @@ final godRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/auth',
-          pageBuilder: (context, state) => buildPageWithTransition(
-              context, state, const LoginScreen()),
+          pageBuilder: (context, state) =>
+              buildPageWithTransition(context, state, const LoginScreen()),
           routes: [
             GoRoute(
               path: 'login',
@@ -60,10 +59,6 @@ final godRouter = GoRouter(
             ),
             GoRoute(
               path: 'otp',
-              builder: (context, state) {
-                String phoneNumber = state.extra as String;
-                return OtpScreen(phoneNumber: phoneNumber);
-              },
               pageBuilder: (context, state) {
                 String phoneNumber = state.extra as String;
                 return buildPageWithTransition(
@@ -82,9 +77,6 @@ final godRouter = GoRouter(
         ),
         GoRoute(
           path: '/profile',
-          builder: (context, state) {
-            return const UserProfileScreen();
-          },
           pageBuilder: (context, state) {
             return buildPageWithTransition(
                 context, state, const UserProfileScreen());
@@ -92,37 +84,43 @@ final godRouter = GoRouter(
         ),
         GoRoute(
           path: '/address',
-          builder: (context, state) {
-            return const AddressManagementScreen();
+          pageBuilder: (context, state) {
+            return buildPageWithTransition(
+                context, state, const AddressManagementScreen());
           },
           routes: [
             GoRoute(
                 path: 'add',
-                builder: (context, state) {
-                  return const AddAddress();
+                pageBuilder: (context, state) {
+                  return buildPageWithTransition(
+                      context, state, const AddAddress());
                 },
                 routes: [
                   GoRoute(
                     path: 'confirm',
-                    builder: (context, state) {
+                    pageBuilder: (context, state) {
                       Addressconfirmation confirm =
                           state.extra as Addressconfirmation;
-                      return ConfirmAddressAdd(addressconfirmation: confirm);
+                      return buildPageWithTransition(context, state,
+                          ConfirmAddressAdd(addressconfirmation: confirm));
                     },
                   ),
                 ]),
             GoRoute(
               path: '/edit',
-              builder: (context, state) {
+              pageBuilder: (context, state) {
                 Address address = state.extra as Address;
-                return EditAddress(address: address);
+                return buildPageWithTransition(
+                    context, state, EditAddress(address: address));
               },
               routes: [
                 GoRoute(
                   path: '/confirm',
-                  builder: (context, state) {
-                    EditAddressconfirmation address = state.extra as EditAddressconfirmation;
-                    return ConfirmAddressEdit(data: address);
+                  pageBuilder: (context, state) {
+                    EditAddressconfirmation address =
+                        state.extra as EditAddressconfirmation;
+                    return buildPageWithTransition(
+                        context, state, ConfirmAddressEdit(data: address));
                   },
                 ),
               ],
@@ -132,12 +130,11 @@ final godRouter = GoRouter(
               pageBuilder: (context, state) {
                 final address = state.extra as Address;
                 return buildPageWithTransition(
-                    context, state,  ViewAddressScreen(address: address));
+                    context, state, ViewAddressScreen(address: address));
               },
             ),
           ],
         ),
-
       ],
     ),
   ],
