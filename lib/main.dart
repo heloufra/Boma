@@ -2,9 +2,10 @@ import 'package:boma/routing/notifiers.dart';
 import 'package:boma/routing/routing.dart';
 import 'package:boma/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'routing/loading.dart';
-void main() {
-
+Future<void> main() async {
+  await dotenv.load();
   runApp(const MyApp());
 }
 

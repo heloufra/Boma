@@ -1,5 +1,7 @@
 import 'package:boma/auth/auth.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 enum StatusCode {
   badRequest,
@@ -35,8 +37,8 @@ class DioClient {
   final Dio _dio;
   final TokenService _tokenService = TokenService();
 
-  static const baseUrl = 'http://192.168.1.3:8000/';
-  
+  static String baseUrl = dotenv.get('SERVER_URL', fallback: 'http://0.0.0.0:8000/');
+
   static BaseOptions opts = BaseOptions(
     baseUrl: baseUrl,
     responseType: ResponseType.json,
