@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:june/june.dart';
+import '../state/address.dart';
 import '../types/address.dart';
 
 class ViewAddressScreen extends StatefulWidget {
@@ -121,23 +123,36 @@ class _ViewAddressScreenState extends State<ViewAddressScreen> {
                         ),
                       ),
                       // if (widget.address.isDefault == true)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'Default',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.blue.shade600,
-                            ),
-                          ),
-                        ),
+                         JuneBuilder(() => AddressState(), builder: (state) {
+                              if (state.isLoading) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              } else if (state.isError) {
+                                return Center(
+                                    child: Text(state.errorMessage ??
+                                        "Error loading addresses"));
+                              } else if (state.defaultAddress?.id == widget.address.id) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    'Default',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.blue.shade600,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return const SizedBox();
+                              }
+                            }),
                     ],
                   ),
                   const SizedBox(height: 16),
