@@ -23,10 +23,8 @@ class AddressState extends JuneState {
   bool get isInitial => status == AddressStatus.initial;
   bool get isError => status == AddressStatus.error;
   bool get hasSelectedAddress => selectedAddress != null;
-  bool get isLoaded => isLoading;
+  bool get isLoaded => status == AddressStatus.loaded;
   List<Address> get addresses => _addresses;
-  // Address? get defaultAddress => 
-  //     addresses.firstWhere((address) => address.isDefault == true, orElse: () => addresses.first);
 
   Future<void> fetchAddresses() async {
     isLoading = true;
@@ -127,39 +125,6 @@ class AddressState extends JuneState {
       setState();
     }
   }
-
-  // Set default address
-  // Future<void> setDefaultAddress(int id) async {
-  //   isLoading = true;
-  //   setState();
-
-  //   try {
-  //     final response = await _api.setDefaultAddress(id);
-
-  //     if (response.success) {
-  //       // Update isDefault status for all addresses
-  //       // for (var address in addresses) {
-  //       //   if (address.id == id) {
-  //       //     final index = addresses.indexOf(address);
-  //       //     addresses[index] = address.copyWith(isDefault: true);
-  //       //   } else {
-  //       //     final index = addresses.indexOf(address);
-  //       //     addresses[index] = address.copyWith(isDefault: false);
-  //       //   }
-  //       // }
-  //       status = AddressStatus.updated;
-  //     } else {
-  //       status = AddressStatus.error;
-  //       errorMessage = response.message;
-  //     }
-  //   } catch (e) {
-  //     status = AddressStatus.error;
-  //     errorMessage = e.toString();
-  //   } finally {
-  //     isLoading = false;
-  //     setState();
-  //   }
-  // }
 
   void selectAddress(Address address) {
     selectedAddress = address;
