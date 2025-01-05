@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -21,7 +20,6 @@ class _AddressListScreenState extends State<AddressManagementScreen> {
   bool error = false;
   String errorMsg = '';
   bool isLoading = false;
-
 
   @override
   void initState() {
@@ -51,7 +49,7 @@ class _AddressListScreenState extends State<AddressManagementScreen> {
   void _getAddresses(AddressState state) async {
     await state.fetchAddresses();
     if (state.isError) {
-     setState(() {
+      setState(() {
         error = true;
         errorMsg = state.errorMessage ?? "";
       });
@@ -79,32 +77,41 @@ class _AddressListScreenState extends State<AddressManagementScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_rounded, size: 32,),
+            icon: const Icon(
+              Icons.add_rounded,
+              size: 32,
+            ),
             onPressed: () {
               context.go("/address/add/");
             },
           ),
         ],
       ),
-      body: JuneBuilder(() => AddressState(),
-        builder: (state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state.isError) {
-            return Center(child: Text(state.errorMessage ?? "Error loading addresses"));
-          } else if (state.isLoaded) {
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.addresses.length,
-              itemBuilder: (context, index) {
-                return AddressCard(address: state.addresses[index]);
-              },
-            );
-          } else {
-            return const Center(child: Text("No addresses found"));
+      body: JuneBuilder(() => AddressState(), builder: (state) {
+        if (state.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.isError) {
+          return Center(
+              child: Text(state.errorMessage ?? "Error loading addresses"));
+        } else if (state.isLoaded) {
+          List<Address> displayedAddresses = [...state.addresses];
+          if (state.defaultAddress != null) {
+            displayedAddresses
+              ..remove(state.defaultAddress!)
+              ..insert(0, state.defaultAddress!);
           }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: displayedAddresses.length,
+            itemBuilder: (context, index) {
+              return AddressCard(address: displayedAddresses[index]);
+            },
+          );
+        } else {
+          return const Center(child: Text("No addresses found"));
         }
-      ),
+      }),
     );
   }
 }
@@ -124,8 +131,6 @@ class AddressCard extends StatefulWidget {
 class _AddressCardState extends State<AddressCard> {
   GoogleMapController? mapController;
   Set<Marker> markers = {};
-
-
 
   @override
   void initState() {
@@ -237,23 +242,36 @@ class _AddressCardState extends State<AddressCard> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                'Default',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.blue.shade600,
-                                ),
-                              ),
-                            ),
+                            JuneBuilder(() => AddressState(), builder: (state) {
+                              if (state.isLoading) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              } else if (state.isError) {
+                                return Center(
+                                    child: Text(state.errorMessage ??
+                                        "Error loading addresses"));
+                              } else if (state.defaultAddress?.id == widget.address.id) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue.shade50,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    'Default',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.blue.shade600,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return const SizedBox();
+                              }
+                            }),
                           ],
                         ),
                       ),
@@ -307,7 +325,6 @@ class _AddressCardState extends State<AddressCard> {
                 title: const Text('Edit'),
                 onTap: () {
                   Navigator.pop(context);
-                  // Handle edit action
                 },
               ),
               ListTile(
@@ -315,15 +332,15 @@ class _AddressCardState extends State<AddressCard> {
                 title: const Text('Delete'),
                 onTap: () {
                   Navigator.pop(context);
-                  // Handle delete action
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.star),
                 title: const Text('Make Default'),
                 onTap: () {
+                  var state = June.getState(() => AddressState());
+                  state.setDefaultAddress(widget.address.id ?? 0);
                   Navigator.pop(context);
-                  // Handle make default action
                 },
               ),
             ],
