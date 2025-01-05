@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
+import 'package:june/june.dart';
+import '../state/address.dart';
 import '../types/address.dart';
-
 
 class AddressManagementScreen extends StatefulWidget {
   const AddressManagementScreen({super.key});
@@ -13,43 +15,67 @@ class AddressManagementScreen extends StatefulWidget {
 }
 
 class _AddressListScreenState extends State<AddressManagementScreen> {
-  final List<Address> addresses = [
-    Address(
-      id: 1,
-      name: "Home",
-      type: "house",
-      city: "New York",
-      fullAddress: "123 Main St, Manhattan, NY 10001",
-      latitude: 40.7128,
-      longitude: -74.0060,
-    ),
-    Address(
-      id: 2,
-      name: "Office",
-      type: "office",
-      city: "New York",
-      fullAddress: "456 Park Ave, Manhattan, NY 10022",
-      latitude: 40.7589,
-      longitude: -73.9851,
-    ),
-    Address(
-      id: 3,
-      name: "Gym",
-      type: "other",
-      city: "New York",
-      fullAddress: "789 Broadway, Manhattan, NY 10003",
-      latitude: 40.7309,
-      longitude: -73.9973,
-    ),
-  ];
+  late List<Address> addresses;
+  int secondsRemaining = 4;
+  Timer? timer;
+  bool error = false;
+  String errorMsg = '';
+  bool isLoading = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var state = June.getState(() => AddressState());
+      _getAddresses(state);
+    });
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (secondsRemaining == 0) {
+        setState(() {
+          timer.cancel();
+          error = false;
+          errorMsg = "";
+        });
+      } else {
+        setState(() {
+          secondsRemaining--;
+        });
+      }
+    });
+  }
+
+  void _getAddresses(AddressState state) async {
+    await state.fetchAddresses();
+    if (state.isError) {
+     setState(() {
+        error = true;
+        errorMsg = state.errorMessage ?? "";
+      });
+    } else if (state.isLoaded) {
+      setState(() {
+        addresses = state.addresses;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Addresses',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        automaticallyImplyLeading: false,
+        backgroundColor:
+            !error ? Theme.of(context).colorScheme.surface : Colors.red,
+        title: Text(
+          error ? errorMsg : "Addresses",
+          style: TextStyle(
+            fontSize: 18,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.normal,
+          ),
         ),
         actions: [
           IconButton(
@@ -60,12 +86,24 @@ class _AddressListScreenState extends State<AddressManagementScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: addresses.length,
-        itemBuilder: (context, index) {
-          return AddressCard(address: addresses[index]);
-        },
+      body: JuneBuilder(() => AddressState(),
+        builder: (state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state.isError) {
+            return Center(child: Text(state.errorMessage ?? "Error loading addresses"));
+          } else if (state.isLoaded) {
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.addresses.length,
+              itemBuilder: (context, index) {
+                return AddressCard(address: state.addresses[index]);
+              },
+            );
+          } else {
+            return const Center(child: Text("No addresses found"));
+          }
+        }
       ),
     );
   }
@@ -86,6 +124,8 @@ class AddressCard extends StatefulWidget {
 class _AddressCardState extends State<AddressCard> {
   GoogleMapController? mapController;
   Set<Marker> markers = {};
+
+
 
   @override
   void initState() {
@@ -196,27 +236,25 @@ class _AddressCardState extends State<AddressCard> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            // if (widget.address.isDefault == true) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade50,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  'Default',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.blue.shade600,
-                                  ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                'Default',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue.shade600,
                                 ),
                               ),
-                            ],
-                          // ],
+                            ),
+                          ],
                         ),
                       ),
                       IconButton(
@@ -280,15 +318,14 @@ class _AddressCardState extends State<AddressCard> {
                   // Handle delete action
                 },
               ),
-              // if (widget.address.isDefault != true)
-                ListTile(
-                  leading: const Icon(Icons.star),
-                  title: const Text('Make Default'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Handle make default action
-                  },
-                ),
+              ListTile(
+                leading: const Icon(Icons.star),
+                title: const Text('Make Default'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Handle make default action
+                },
+              ),
             ],
           ),
         );
