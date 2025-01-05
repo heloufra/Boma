@@ -1,18 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-enum ConfirmCaller {
-  add,
-  edit,
-  view,
-}
-
-enum AddressEvent {
-  add, 
-  view,
-  edit
-}
-
 class Address {
   final int? id;
   final String name;
@@ -27,7 +15,7 @@ class Address {
   final String? apartmentNumber;
 
   Address({
-     this.id,
+    this.id,
     required this.name,
     required this.type,
     required this.city,
@@ -93,11 +81,9 @@ class AddressResponse {
 
 class Addressconfirmation {
   final LatLng userLocation;
-  final ConfirmCaller caller;
 
   const Addressconfirmation({
     required this.userLocation,
-    required this.caller
   });
 }
 
