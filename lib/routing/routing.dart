@@ -1,3 +1,5 @@
+import 'package:boma/error/error.dart';
+import 'package:boma/error/screen/undoable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:june/june.dart';
@@ -83,6 +85,25 @@ final godRouter = GoRouter(
           },
         ),
         GoRoute(
+          path: "/error", 
+
+           pageBuilder: (context, state) {
+                   UndoableType undoableType = state.extra as UndoableType;
+            return buildPageWithTransition(
+                context, state,  Undoable(data: undoableType,));
+          },
+          routes: [
+              GoRoute(
+                path: "undoable",
+                pageBuilder: (context, state) {
+                   UndoableType undoableType = state.extra as UndoableType;
+            return buildPageWithTransition(
+                context, state,  Undoable(data: undoableType,));
+          },
+                ),
+          ],
+        ),
+        GoRoute(
           path: '/address',
           pageBuilder: (context, state) {
             return buildPageWithTransition(
@@ -109,9 +130,10 @@ final godRouter = GoRouter(
             GoRoute(
               path: '/edit',
               pageBuilder: (context, state) {
-                Address address = state.extra as Address;
+                EditAddressconfirmation address =
+                    state.extra as EditAddressconfirmation;
                 return buildPageWithTransition(
-                    context, state, EditAddress(address: address));
+                    context, state, EditAddress(data: address));
               },
               routes: [
                 GoRoute(
