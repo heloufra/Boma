@@ -1,5 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:june/june.dart';
+
 import '../types/address.dart';
+import '../state/address.dart';
 
 class ConfirmAddressAdd extends StatefulWidget {
   final Addressconfirmation addressconfirmation;
@@ -11,7 +16,14 @@ class ConfirmAddressAdd extends StatefulWidget {
 }
 
 class _ConfirmAddress extends State<ConfirmAddressAdd> {
-  String _selectedAddressType = 'Apartment';
+  static const maxSeconds = 4;
+  int secondsRemaining = maxSeconds;
+  Timer? timer;
+  bool error = false;
+  String errorMsg = '';
+  bool isLoading = false;
+
+  String _selectedAddressType = 'apartment';
   final _formKey = GlobalKey<FormState>();
   final _labelController = TextEditingController();
   final _streetController = TextEditingController();
@@ -48,7 +60,6 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
           const SizedBox(height: 16),
           TextFormField(
             controller: _streetController,
-            // cursorColor: Colors.white,
             decoration: _getInputDecoration('Street name'),
             validator: (value) {
               if (value?.isEmpty ?? true) {
@@ -58,7 +69,7 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
             },
           ),
           const SizedBox(height: 16),
-          if (_selectedAddressType != "House") ...[
+          if (_selectedAddressType != "house") ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
               child: TextFormField(
@@ -96,7 +107,7 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value?.isEmpty ?? true) {
-                        return 'Please enter a street';
+                        return 'Please enter a house number';
                       }
                       return null;
                     },
@@ -111,7 +122,9 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState?.validate() ?? false) {}
+                if (_formKey.currentState?.validate() ?? false) {
+                  _saveAddress();
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -135,25 +148,25 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
   }
 
   final Map<String, Map<String, dynamic>> _addressTypes = {
-    'Apartment': {
+    'apartment': {
       'label': 'Apartment',
       'icon': Icons.apartment,
       'showFloor': true,
       'showUnit': true,
     },
-    'House': {
+    'house': {
       'label': 'House',
       'icon': Icons.home,
       'showFloor': false,
       'showUnit': false,
     },
-    'Office': {
+    'office': {
       'label': 'Office',
       'icon': Icons.business,
       'showFloor': true,
       'showUnit': true,
     },
-    'Other': {
+    'other': {
       'label': 'Other',
       'icon': Icons.location_city,
       'showFloor': true,
@@ -213,22 +226,93 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
     );
   }
 
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (secondsRemaining == 0) {
+        setState(() {
+          timer.cancel();
+          error = false;
+          errorMsg = "";
+        });
+      } else {
+        setState(() {
+          secondsRemaining--;
+        });
+      }
+    });
+  }
+
+  void _saveAddress() {
+    var state = June.getState(() => AddressState());
+
+    final newAddress = Address(
+      name: _labelController.text,
+      type: _selectedAddressType,
+      city: 'BenGuerir',
+      fullAddress:
+          '${_streetController.text}, ${_houseNumberController.text}, ${_floorController.text}, ${_apartmentController.text}',
+      latitude: widget.addressconfirmation.userLocation.latitude,
+      longitude: widget.addressconfirmation.userLocation.longitude,
+    );
+
+    state.addAddress(newAddress).then((_) {
+      if (state.isError) {
+        setState(() {
+          error = true;
+          errorMsg = state.errorMessage ?? "";
+          startTimer();
+        });
+        if (!mounted) return;
+        state.resetErrors();
+      } else {
+        state.fetchAddresses();
+        if (!mounted) return;
+        context.go('/address/');
+      }
+    });
+  }
+
+ @override
+  void dispose() {
+    timer?.cancel();
+    _labelController.dispose();
+    _streetController.dispose();
+    _houseNumberController.dispose();
+    _floorController.dispose();
+    _apartmentController.dispose();
+    super.dispose();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: const Text("Confirm Address"),
-        //   leading: IconButton(onPressed: () {
-        //     // context.go.op
-        //   }, icon: const Icon(Icons.back_hand)),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: _buildForm(),
-          )
+        backgroundColor:
+            !error ? Theme.of(context).colorScheme.surface : Colors.red,
+        title: Text(
+          errorMsg,
+          style: TextStyle(
+            fontSize: 18,
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.normal,
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              _saveAddress();
+            },
+            child: Text(
+              'Save',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+          ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: _buildForm(),
       ),
     );
   }
