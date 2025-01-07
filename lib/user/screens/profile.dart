@@ -78,29 +78,15 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  Future<void> logout() async {
-    var state = June.getState(() => UserProfileState());
-
-    try {
-      await state.signOut();
-      if (mounted) {
-        context.go("/auth");
-      }
-    } catch (e) {
-      setState(() {
-        error = true;
-        errorMsg = e.toString();
-      });
-      startTimer();
-    }
-  }
-
   Future<void> save() async {
     var state = June.getState(() => UserProfileState());
 
     if (userProfile?.name == _nameController.text &&
         userProfile?.email == _emailController.text &&
         userProfile?.language == _selectedLanguage) {
+                if (mounted) {
+          context.go('/settings');
+      }
       return;
     }
 
@@ -167,7 +153,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Btextfield(
                           controller: _nameController, labelText: 'Full Name'),
@@ -216,23 +202,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                           );
                         }).toList(),
                       ),
-                      const Spacer(),
-                      ElevatedButton(
-                        onPressed: () {
-                          logout();
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 50, vertical: 20),
-                            textStyle: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        child: const Text('Sign Out'),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                     
                     ],
                   ),
                 ),

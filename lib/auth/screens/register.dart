@@ -69,7 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         timer?.cancel();
         errorTimer?.cancel();
         if (mounted) {
-           context.go('/settings/profile');
+           context.go('/settings');
         }
       }
     }

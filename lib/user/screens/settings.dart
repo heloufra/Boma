@@ -163,7 +163,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   onTap: () => context.go('/settings/address'),
                 ),
-                const Spacer(),
+                const SizedBox(height: 40,),
                 ElevatedButton(
                   onPressed: () {
                     logout();
