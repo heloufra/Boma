@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:boma/error/error.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:june/june.dart';
+
 import '../state/address.dart';
 import '../types/address.dart';
 
@@ -60,11 +62,13 @@ class _AddressListScreenState extends State<AddressManagementScreen> {
     }
   }
 
+  void addAddress() async {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         backgroundColor:
             !error ? Theme.of(context).colorScheme.surface : Colors.red,
         title: Text(
@@ -82,7 +86,13 @@ class _AddressListScreenState extends State<AddressManagementScreen> {
               size: 32,
             ),
             onPressed: () {
-              context.go("/address/add/");
+              var state = June.getState(() => AddressState());
+              if (state.addresses.length >= 5) {
+                UndoableType data = UndoableType("You cannot add more than 5 addresses", "Return Back", "/address");
+                context.go("/error/undoable", extra: data);
+              } else {
+                context.go("/settings/address/add/");
+              }
             },
           ),
         ],
@@ -150,7 +160,7 @@ class _AddressCardState extends State<AddressCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.go("/address/view-address", extra: widget.address);
+        context.go("/settings/address/view-address", extra: EditAddressconfirmation(address: widget.address, userLocation: widget.address.getLatLng()));
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),
@@ -161,69 +171,69 @@ class _AddressCardState extends State<AddressCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Stack(
-                children: [
-                  SizedBox(
-                    height: 150,
-                    child: GoogleMap(
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(
-                          widget.address.latitude,
-                          widget.address.longitude,
-                        ),
-                        zoom: 15,
-                      ),
-                      onMapCreated: (controller) {
-                        mapController = controller;
-                      },
-                      markers: markers,
-                      zoomControlsEnabled: false,
-                      mapToolbarEnabled: false,
-                      myLocationButtonEnabled: false,
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withOpacity(0.5),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        widget.address.type.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // ClipRRect(
+            //   borderRadius:
+            //       const BorderRadius.vertical(top: Radius.circular(16)),
+            //   child: Stack(
+            //     children: [
+            //       SizedBox(
+            //         height: 150,
+            //         child: GoogleMap(
+            //           initialCameraPosition: CameraPosition(
+            //             target: LatLng(
+            //               widget.address.latitude,
+            //               widget.address.longitude,
+            //             ),
+            //             zoom: 15,
+            //           ),
+            //           onMapCreated: (controller) {
+            //             mapController = controller;
+            //           },
+            //           markers: markers,
+            //           zoomControlsEnabled: false,
+            //           mapToolbarEnabled: false,
+            //           myLocationButtonEnabled: false,
+            //         ),
+            //       ),
+            //       Positioned.fill(
+            //         child: Container(
+            //           decoration: BoxDecoration(
+            //             gradient: LinearGradient(
+            //               colors: [
+            //                 Colors.transparent,
+            //                 Colors.black.withOpacity(0.5),
+            //               ],
+            //               begin: Alignment.topCenter,
+            //               end: Alignment.bottomCenter,
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //       Positioned(
+            //         bottom: 8,
+            //         left: 8,
+            //         child: Container(
+            //           padding: const EdgeInsets.symmetric(
+            //             horizontal: 12,
+            //             vertical: 6,
+            //           ),
+            //           decoration: BoxDecoration(
+            //             color: Colors.black.withOpacity(0.7),
+            //             borderRadius: BorderRadius.circular(12),
+            //           ),
+            //           child: Text(
+            //             widget.address.type.toUpperCase(),
+            //             style: const TextStyle(
+            //               color: Colors.white,
+            //               fontSize: 12,
+            //               fontWeight: FontWeight.bold,
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -250,7 +260,8 @@ class _AddressCardState extends State<AddressCard> {
                                 return Center(
                                     child: Text(state.errorMessage ??
                                         "Error loading addresses"));
-                              } else if (state.defaultAddress?.id == widget.address.id) {
+                              } else if (state.defaultAddress?.id ==
+                                  widget.address.id) {
                                 return Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8,
@@ -275,12 +286,12 @@ class _AddressCardState extends State<AddressCard> {
                           ],
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.more_vert),
-                        onPressed: () {
-                          _showOptions(context);
-                        },
-                      ),
+                      // IconButton(
+                      //   icon: const Icon(Icons.more_vert),
+                      //   onPressed: () {
+                      //     _showOptions(context, widget.address.id ?? 0);
+                      //   },
+                      // ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -308,7 +319,7 @@ class _AddressCardState extends State<AddressCard> {
     );
   }
 
-  void _showOptions(BuildContext context) {
+  void _showOptions(BuildContext context, int id) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -324,13 +335,20 @@ class _AddressCardState extends State<AddressCard> {
                 leading: const Icon(Icons.edit),
                 title: const Text('Edit'),
                 onTap: () {
-                  Navigator.pop(context);
+                  EditAddressconfirmation data = EditAddressconfirmation(
+                      address: widget.address,
+                      userLocation: widget.address.getLatLng());
+                  context.go("/settings/address/edit", extra: data);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.delete),
                 title: const Text('Delete'),
-                onTap: () {
+                onTap: ()  {
+                  var state = June.getState(() => AddressState());
+                 state.deleteAddress(id);
+                  state.fetchAddresses();
+                  if (!mounted) return;
                   Navigator.pop(context);
                 },
               ),

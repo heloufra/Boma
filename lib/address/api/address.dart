@@ -30,7 +30,7 @@ class AddressAPI {
   Future<AddressResponse> addAddress(Address address) async {
     try {
       final response = await dioClient.post(
-        '/c/addresses/',
+        '/c/address/',
         data: address.toJson(),
       );
 
@@ -52,7 +52,7 @@ class AddressAPI {
   Future<AddressResponse> updateAddress(int id, Address address) async {
     try {
       final response = await dioClient.put(
-        '/c/addresses/$id/',
+        '/c/address/$id/',
         data: address.toJson(),
       );
 
@@ -73,7 +73,7 @@ class AddressAPI {
 
   Future<AddressResponse> deleteAddress(int id) async {
     try {
-      final response = await dioClient.delete('/c/addresses/$id/');
+      final response = await dioClient.delete('/c/address/$id/');
       
       return AddressResponse(
         success: true,

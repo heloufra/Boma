@@ -15,7 +15,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _fullNameController = TextEditingController();
-  // File? _image;
   Timer? timer;
   Timer? errorTimer;
   bool error = false;
@@ -23,24 +22,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isLoading = false;
   TextEditingController controller = TextEditingController();
   int errorSecondsRemaining = 5;
-  // Future<void> _pickImage() async {
-  //   // final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
 
-  //   // setState(() {
-  //   //   if (pickedFile != null) {
-  //   //     _image = File(pickedFile.path);
-  //   //   } else {
-  //   //     error = true;
-  //   //     errorMsg = 'No image selected';
-  //   //   }
-  //   // });
-  // }
   void startErrorTimer() {
     errorTimer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
       if (errorSecondsRemaining == 0) {
         setState(() {
-          // timer.cancel(); testing how periodic it is
-          // Perform your action here
           errorTimer?.cancel();
           error = false;
           errorMsg = "";
@@ -83,7 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         timer?.cancel();
         errorTimer?.cancel();
         if (mounted) {
-           context.go('/address');
+           context.go('/settings/profile');
         }
       }
     }

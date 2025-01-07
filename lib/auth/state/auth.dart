@@ -6,7 +6,7 @@ import '../types/auth.dart';
 class AuthState extends JuneState {
   final AuthAPI _api = AuthAPI();
   final UserProfileAPI _userApi = UserProfileAPI();
-
+  late bool _isNewUser;
   late TokenService? tokenService = TokenService();
 
   AuthStatus status = AuthStatus.authenticated;
@@ -16,7 +16,6 @@ class AuthState extends JuneState {
   bool isLoading = false;
   late Token _tokens;
 
-  // To be deleted
   String? otp;
 
   bool get isAuthenticated => status == AuthStatus.authenticated;
@@ -25,6 +24,7 @@ class AuthState extends JuneState {
   bool get isError => status == AuthStatus.error;
   bool get isRegistered => status == AuthStatus.registered;
   Token get tokens => _tokens;
+  bool get isNewUser=> _isNewUser;
 
   Future<void> sendOTP(String phone) async {
     isLoading = true;
@@ -66,6 +66,12 @@ class AuthState extends JuneState {
       if (response.success) {
         status = AuthStatus.authenticated;
         _tokens = Token.fromJson(response.response?.data);
+
+        if (response.response?.data["created"] == false) {
+          _isNewUser = true;
+        } else {
+          _isNewUser = false;
+        }
         // get tokens from tokens object
         await _saveAuthToken(_tokens.accessToken, _tokens.refreshToken);
         // store token in secure way

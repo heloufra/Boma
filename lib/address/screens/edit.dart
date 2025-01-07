@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import '../types/address.dart';
 
 class EditAddress extends StatefulWidget {
-  final Address address;
-  const EditAddress({super.key, required this.address});
+  final EditAddressconfirmation data;
+  const EditAddress({super.key, required this.data});
 
   @override
   EditAddressState createState() => EditAddressState();
 }
 
 class EditAddressState extends State<EditAddress> {
-  late LatLng _selectedLocation = widget.address.getLatLng();
+  late LatLng _selectedLocation = widget.data.address.getLatLng();
 
   GoogleMapController? _mapController;
   bool _isLoadingLocation = false;
@@ -22,9 +23,9 @@ class EditAddressState extends State<EditAddress> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getCurrentLocation();
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _getCurrentLocation();
+    // });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -183,9 +184,7 @@ class EditAddressState extends State<EditAddress> {
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
                 onPressed: () {
-                  Addressconfirmation confirm =
-                      Addressconfirmation(userLocation: _selectedLocation, caller: ConfirmCaller.add);
-                  context.go("/address/add/confirm", extra: confirm);
+                  context.go("/address/view-address/edit/confirm", extra: EditAddressconfirmation(userLocation: _selectedLocation, address: widget.data.address));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.secondary,

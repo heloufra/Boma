@@ -184,8 +184,8 @@ class AddAddressState extends State<AddAddress> {
               child: ElevatedButton(
                 onPressed: () {
                   Addressconfirmation confirm =
-                      Addressconfirmation(userLocation: _selectedLocation, caller: ConfirmCaller.add);
-                  context.go("/address/add/confirm", extra: confirm);
+                      Addressconfirmation(userLocation: _selectedLocation);
+                  context.go("/settings/address/add/confirm", extra: confirm);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.secondary,

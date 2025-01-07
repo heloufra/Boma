@@ -76,4 +76,6 @@ class UserProfileState extends JuneState {
       setState();
     }
   }
+
+  go(String s) {}
 }

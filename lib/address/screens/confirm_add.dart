@@ -30,6 +30,7 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
   final _houseNumberController = TextEditingController();
   final _floorController = TextEditingController();
   final _apartmentController = TextEditingController();
+  final _buildingController = TextEditingController();
 
   InputDecoration _getInputDecoration(String label) {
     return InputDecoration(
@@ -73,7 +74,7 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
               child: TextFormField(
-                controller: _apartmentController,
+                controller: _buildingController,
                 decoration: _getInputDecoration('Building number'),
               ),
             ),
@@ -249,8 +250,13 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
       name: _labelController.text,
       type: _selectedAddressType,
       city: 'BenGuerir',
-      fullAddress:
-          '${_streetController.text}, ${_houseNumberController.text}, ${_floorController.text}, ${_apartmentController.text}',
+      fullAddress: (_selectedAddressType != "house") ? 
+          '${_streetController.text}, ${_buildingController.text}, ${_floorController.text}, ${_apartmentController.text}' : 
+           '${_streetController.text}, ${_houseNumberController.text}',
+      apartmentNumber: (_selectedAddressType == "house") ? _houseNumberController.text :_apartmentController.text,
+      floorNumber: _floorController.text,
+      buildingNumber: _buildingController.text,
+      streetName: _streetController.text,
       latitude: widget.addressconfirmation.userLocation.latitude,
       longitude: widget.addressconfirmation.userLocation.longitude,
     );
@@ -267,7 +273,7 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
       } else {
         state.fetchAddresses();
         if (!mounted) return;
-        context.go('/address/');
+        context.go('/settings/address/');
       }
     });
   }

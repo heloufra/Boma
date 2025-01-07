@@ -120,6 +120,10 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           name: _nameController.text,
           email: _emailController.text,
           language: _selectedLanguage));
+      if (mounted) {
+          context.go('/settings');
+      }
+    
     } catch (e) {
       setState(() {
         error = true;

@@ -1,5 +1,4 @@
 import 'package:boma/error/error.dart';
-import 'package:boma/error/screen/undoable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:june/june.dart';
@@ -78,81 +77,103 @@ final godRouter = GoRouter(
           ],
         ),
         GoRoute(
-          path: '/profile',
-          pageBuilder: (context, state) {
-            return buildPageWithTransition(
-                context, state, const UserProfileScreen());
-          },
-        ),
-        GoRoute(
-          path: "/error", 
-
-           pageBuilder: (context, state) {
-                   UndoableType undoableType = state.extra as UndoableType;
-            return buildPageWithTransition(
-                context, state,  Undoable(data: undoableType,));
-          },
-          routes: [
+            path: '/settings',
+            pageBuilder: (context, state) {
+              return buildPageWithTransition(
+                  context, state, const SettingsScreen());
+            },
+            routes: [
               GoRoute(
-                path: "undoable",
-                pageBuilder: (context, state) {
-                   UndoableType undoableType = state.extra as UndoableType;
-            return buildPageWithTransition(
-                context, state,  Undoable(data: undoableType,));
-          },
-                ),
-          ],
-        ),
-        GoRoute(
-          path: '/address',
-          pageBuilder: (context, state) {
-            return buildPageWithTransition(
-                context, state, const AddressManagementScreen());
-          },
-          routes: [
-            GoRoute(
-                path: 'add',
+                path: '/profile',
                 pageBuilder: (context, state) {
                   return buildPageWithTransition(
-                      context, state, const AddAddress());
+                      context, state, const UserProfileScreen());
+                },
+              ),
+              GoRoute(
+                path: '/address',
+                pageBuilder: (context, state) {
+                  return buildPageWithTransition(
+                      context, state, const AddressManagementScreen());
                 },
                 routes: [
                   GoRoute(
-                    path: 'confirm',
-                    pageBuilder: (context, state) {
-                      Addressconfirmation confirm =
-                          state.extra as Addressconfirmation;
-                      return buildPageWithTransition(context, state,
-                          ConfirmAddressAdd(addressconfirmation: confirm));
-                    },
-                  ),
-                ]),
+                      path: 'add',
+                      pageBuilder: (context, state) {
+                        return buildPageWithTransition(
+                            context, state, const AddAddress());
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'confirm',
+                          pageBuilder: (context, state) {
+                            Addressconfirmation confirm =
+                                state.extra as Addressconfirmation;
+                            return buildPageWithTransition(
+                                context,
+                                state,
+                                ConfirmAddressAdd(
+                                    addressconfirmation: confirm));
+                          },
+                        ),
+                      ]),
+                  GoRoute(
+                      path: '/view-address',
+                      pageBuilder: (context, state) {
+                        final address = state.extra as EditAddressconfirmation;
+                        return buildPageWithTransition(
+                            context,
+                            state,
+                            ViewAddressScreen(
+                                editAddressconfirmation: address));
+                      },
+                      routes: [
+                        GoRoute(
+                          path: '/edit',
+                          pageBuilder: (context, state) {
+                            EditAddressconfirmation address =
+                                state.extra as EditAddressconfirmation;
+                            return buildPageWithTransition(
+                                context, state, EditAddress(data: address));
+                          },
+                          routes: [
+                            GoRoute(
+                              path: '/confirm',
+                              pageBuilder: (context, state) {
+                                EditAddressconfirmation address =
+                                    state.extra as EditAddressconfirmation;
+                                return buildPageWithTransition(context, state,
+                                    ConfirmAddressEdit(data: address));
+                              },
+                            ),
+                          ],
+                        ),
+                      ]),
+                ],
+              ),
+            ]),
+        GoRoute(
+          path: "/error",
+          pageBuilder: (context, state) {
+            UndoableType undoableType = state.extra as UndoableType;
+            return buildPageWithTransition(
+                context,
+                state,
+                Undoable(
+                  data: undoableType,
+                ));
+          },
+          routes: [
             GoRoute(
-              path: '/edit',
+              path: "undoable",
               pageBuilder: (context, state) {
-                EditAddressconfirmation address =
-                    state.extra as EditAddressconfirmation;
+                UndoableType undoableType = state.extra as UndoableType;
                 return buildPageWithTransition(
-                    context, state, EditAddress(data: address));
-              },
-              routes: [
-                GoRoute(
-                  path: '/confirm',
-                  pageBuilder: (context, state) {
-                    EditAddressconfirmation address =
-                        state.extra as EditAddressconfirmation;
-                    return buildPageWithTransition(
-                        context, state, ConfirmAddressEdit(data: address));
-                  },
-                ),
-              ],
-            ),
-            GoRoute(
-              path: '/view-address',
-              pageBuilder: (context, state) {
-                final address = state.extra as Address;
-                return buildPageWithTransition(
-                    context, state, ViewAddressScreen(address: address));
+                    context,
+                    state,
+                    Undoable(
+                      data: undoableType,
+                    ));
               },
             ),
           ],

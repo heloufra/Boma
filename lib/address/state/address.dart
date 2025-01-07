@@ -29,6 +29,11 @@ class AddressState extends JuneState {
     }
   }
 
+  void resetErrors() {
+    status = AddressStatus.loaded;
+    setState();
+  }
+
   void setDefaultAddress(int id) {
     if (_addresses.any((address) => address.id == id)) {
       _defaultAddressId = id;
@@ -125,7 +130,7 @@ class AddressState extends JuneState {
         if (selectedAddress?.id == id) {
           selectedAddress = null;
         }
-        status = AddressStatus.deleted;
+        status = AddressStatus.loaded;
       } else {
         status = AddressStatus.error;
         errorMessage = response.message;
@@ -135,6 +140,9 @@ class AddressState extends JuneState {
       errorMessage = e.toString();
     } finally {
       isLoading = false;
+      if (id == _defaultAddressId) {
+        setDefaultAddress(addresses.first.id ?? 0);
+      }
       setState();
     }
   }

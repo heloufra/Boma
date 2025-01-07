@@ -15,7 +15,7 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<OtpScreen> {
-  static const maxSeconds = 300; // 5 minutes in seconds
+  static const maxSeconds = 300; 
   int secondsRemaining = maxSeconds;
   int errorSecondsRemaining = 5;
 
@@ -127,7 +127,11 @@ class _LoginScreenState extends State<OtpScreen> {
       timer?.cancel();
       errorTimer?.cancel();
       if (mounted) {
-        context.go('/auth/register');
+        if (state.isNewUser) {
+          context.go('/auth/register');
+        } else {
+          context.go("/settings");
+        }
       }
 
       return true;
