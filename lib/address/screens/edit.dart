@@ -184,7 +184,7 @@ class EditAddressState extends State<EditAddress> {
               alignment: Alignment.bottomCenter,
               child: ElevatedButton(
                 onPressed: () {
-                  context.go("/address/view-address/edit/confirm", extra: EditAddressconfirmation(userLocation: _selectedLocation, address: widget.data.address));
+                  context.go("/settings/address/view-address/edit/confirm", extra: EditAddressconfirmation(userLocation: _selectedLocation, address: widget.data.address));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.secondary,

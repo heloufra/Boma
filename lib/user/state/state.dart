@@ -1,4 +1,3 @@
-
 import 'package:june/june.dart';
 import '../api/api.dart';
 import '../type/user.dart';
@@ -22,6 +21,7 @@ class UserProfileState extends JuneState {
   bool get isInitial => status == UserProfileStatus.initial;
   bool get isError => status == UserProfileStatus.error;
   UserProfile? get user => userProfile;
+
   Future<void> getUserProfile() async {
     isLoading = true;
     setState();
@@ -61,7 +61,6 @@ class UserProfileState extends JuneState {
       if (response.success) {
         if (response.userProfile != null) {
           this.userProfile = response.userProfile;
-          setState();
         }
         status = UserProfileStatus.updated;
       } else {
@@ -77,5 +76,8 @@ class UserProfileState extends JuneState {
     }
   }
 
-  go(String s) {}
+  // It should only be called when updating the user profile
+  void clearError() {
+    status = UserProfileStatus.loaded;
+  }
 }

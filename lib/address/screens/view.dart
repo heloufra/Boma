@@ -193,7 +193,7 @@ class _ViewAddressScreenState extends State<ViewAddressScreen> {
                         onTap: ()  {
                           var state = June.getState(() => AddressState());
                          state.deleteAddress(widget.editAddressconfirmation.address.id ?? 0);
-                          // state.fetchAddresses();
+                          state.fetchAddresses();
                           if (!mounted) return;
                           Navigator.pop(context);
                         },

@@ -24,7 +24,7 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
   bool error = false;
   String errorMsg = '';
   bool isLoading = false;
-    GoogleMapController? mapController;
+  GoogleMapController? mapController;
   Set<Marker> markers = {};
 
   final _formKey = GlobalKey<FormState>();
@@ -45,11 +45,9 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
     _floorController.text = widget.data.address.floorNumber ?? "";
     _buildingNumberController.text = widget.data.address.buildingNumber ?? "";
 
-
     setState(() {
       _selectedAddressType = widget.data.address.type;
     });
-    
   }
 
   InputDecoration _getInputDecoration(String label) {
@@ -145,7 +143,7 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
             child: ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState?.validate() ?? false) {
-                   _saveAddress();
+                  _saveAddress();
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -276,7 +274,7 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
           startTimer();
         });
         if (!mounted) return;
-          state.resetErrors();
+        state.resetErrors();
       } else {
         state.fetchAddresses();
         if (!mounted) return;
@@ -330,7 +328,9 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              _saveAddress();
+              if (_formKey.currentState?.validate() ?? false) {
+                _saveAddress();
+              }
             },
             child: Text(
               'Save',
@@ -342,14 +342,12 @@ class _ConfirmAddress extends State<ConfirmAddressEdit> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child:  Column(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 children: [
                   _buildForm(),
                 ],
-            )
-            
-          )
+              ))
         ],
       ),
     );

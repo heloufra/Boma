@@ -171,69 +171,6 @@ class _AddressCardState extends State<AddressCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ClipRRect(
-            //   borderRadius:
-            //       const BorderRadius.vertical(top: Radius.circular(16)),
-            //   child: Stack(
-            //     children: [
-            //       SizedBox(
-            //         height: 150,
-            //         child: GoogleMap(
-            //           initialCameraPosition: CameraPosition(
-            //             target: LatLng(
-            //               widget.address.latitude,
-            //               widget.address.longitude,
-            //             ),
-            //             zoom: 15,
-            //           ),
-            //           onMapCreated: (controller) {
-            //             mapController = controller;
-            //           },
-            //           markers: markers,
-            //           zoomControlsEnabled: false,
-            //           mapToolbarEnabled: false,
-            //           myLocationButtonEnabled: false,
-            //         ),
-            //       ),
-            //       Positioned.fill(
-            //         child: Container(
-            //           decoration: BoxDecoration(
-            //             gradient: LinearGradient(
-            //               colors: [
-            //                 Colors.transparent,
-            //                 Colors.black.withOpacity(0.5),
-            //               ],
-            //               begin: Alignment.topCenter,
-            //               end: Alignment.bottomCenter,
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //       Positioned(
-            //         bottom: 8,
-            //         left: 8,
-            //         child: Container(
-            //           padding: const EdgeInsets.symmetric(
-            //             horizontal: 12,
-            //             vertical: 6,
-            //           ),
-            //           decoration: BoxDecoration(
-            //             color: Colors.black.withOpacity(0.7),
-            //             borderRadius: BorderRadius.circular(12),
-            //           ),
-            //           child: Text(
-            //             widget.address.type.toUpperCase(),
-            //             style: const TextStyle(
-            //               color: Colors.white,
-            //               fontSize: 12,
-            //               fontWeight: FontWeight.bold,
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -286,12 +223,6 @@ class _AddressCardState extends State<AddressCard> {
                           ],
                         ),
                       ),
-                      // IconButton(
-                      //   icon: const Icon(Icons.more_vert),
-                      //   onPressed: () {
-                      //     _showOptions(context, widget.address.id ?? 0);
-                      //   },
-                      // ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -316,55 +247,6 @@ class _AddressCardState extends State<AddressCard> {
           ],
         ),
       ),
-    );
-  }
-
-  void _showOptions(BuildContext context, int id) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text('Edit'),
-                onTap: () {
-                  EditAddressconfirmation data = EditAddressconfirmation(
-                      address: widget.address,
-                      userLocation: widget.address.getLatLng());
-                  context.go("/settings/address/edit", extra: data);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete),
-                title: const Text('Delete'),
-                onTap: ()  {
-                  var state = June.getState(() => AddressState());
-                 state.deleteAddress(id);
-                  state.fetchAddresses();
-                  if (!mounted) return;
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.star),
-                title: const Text('Make Default'),
-                onTap: () {
-                  var state = June.getState(() => AddressState());
-                  state.setDefaultAddress(widget.address.id ?? 0);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 

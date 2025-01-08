@@ -250,10 +250,12 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
       name: _labelController.text,
       type: _selectedAddressType,
       city: 'BenGuerir',
-      fullAddress: (_selectedAddressType != "house") ? 
-          '${_streetController.text}, ${_buildingController.text}, ${_floorController.text}, ${_apartmentController.text}' : 
-           '${_streetController.text}, ${_houseNumberController.text}',
-      apartmentNumber: (_selectedAddressType == "house") ? _houseNumberController.text :_apartmentController.text,
+      fullAddress: (_selectedAddressType != "house")
+          ? '${_streetController.text}, ${_buildingController.text}, ${_floorController.text}, ${_apartmentController.text}'
+          : '${_streetController.text}, ${_houseNumberController.text}',
+      apartmentNumber: (_selectedAddressType == "house")
+          ? _houseNumberController.text
+          : _apartmentController.text,
       floorNumber: _floorController.text,
       buildingNumber: _buildingController.text,
       streetName: _streetController.text,
@@ -278,7 +280,7 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
     });
   }
 
- @override
+  @override
   void dispose() {
     timer?.cancel();
     _labelController.dispose();
@@ -288,7 +290,7 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
     _apartmentController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -307,7 +309,9 @@ class _ConfirmAddress extends State<ConfirmAddressAdd> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              _saveAddress();
+              if (_formKey.currentState?.validate() ?? false) {
+                _saveAddress();
+              }
             },
             child: Text(
               'Save',

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:boma/components/bbutton.dart';
 import 'package:boma/user/user.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -13,10 +14,11 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class UserProfileScreenState extends State<UserProfileScreen> {
-  final TextEditingController _nameController =
-      TextEditingController(text: "hamza");
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _nameController = TextEditingController(text: "");
   final TextEditingController _emailController =
-      TextEditingController(text: "hamza@gmail.com");
+      TextEditingController(text: "");
   String _selectedLanguage = "en";
   late Color s;
 
@@ -84,8 +86,8 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     if (userProfile?.name == _nameController.text &&
         userProfile?.email == _emailController.text &&
         userProfile?.language == _selectedLanguage) {
-                if (mounted) {
-          context.go('/settings');
+      if (mounted) {
+        context.go('/settings');
       }
       return;
     }
@@ -106,10 +108,20 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           name: _nameController.text,
           email: _emailController.text,
           language: _selectedLanguage));
-      if (mounted) {
-          context.go('/settings');
+
+      if (state.isError) {
+        setState(() {
+          error = true;
+          errorMsg = state.errorMessage ?? "Error";
+        });
+        state.clearError();
+        startTimer();
+        return;
       }
-    
+
+      if (mounted) {
+        context.go('/settings');
+      }
     } catch (e) {
       setState(() {
         error = true;
@@ -122,91 +134,125 @@ class UserProfileScreenState extends State<UserProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor:
-            !error ? Theme.of(context).colorScheme.surface : Colors.red,
-        title: Text(
-          errorMsg,
-          style: TextStyle(
-            fontSize: 18,
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              save();
-            },
-            child: Text(
-              'Save',
-              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: AppBar(
+          automaticallyImplyLeading: true,
+          backgroundColor:
+              !error ? Theme.of(context).colorScheme.surface : Colors.red,
+          title: Text(
+            errorMsg,
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.normal,
             ),
           ),
-        ],
-      ),
-      body: JuneBuilder(() => UserProfileState(),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                if (_formKey.currentState?.validate() ?? false) {
+                  save();
+                }
+              },
+              child: Text(
+                'Save',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 22),
+              ),
+            ),
+          ],
+        ),
+        body: JuneBuilder(
+          () => UserProfileState(),
           builder: (state) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Btextfield(
-                          controller: _nameController, labelText: 'Full Name'),
-                      const SizedBox(height: 16),
-                      Btextfield(
-                          controller: _emailController, labelText: "Email"),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: _selectedLanguage,
-                        decoration: InputDecoration(
-                          labelText: 'language',
-                          labelStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.normal,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
-                                width: 2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
-                                width: 2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          filled: true,
-                          fillColor: Theme.of(context)
-                              .colorScheme
-                              .secondary
-                              .withOpacity(0.1),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey, // GlobalKey for form validation
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Btextfield(
+                      controller: _nameController,
+                      labelText: 'Full Name',
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Name cannot be empty';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    Btextfield(
+                      controller: _emailController,
+                      labelText: "Email",
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email cannot be empty';
+                        }
+                        final emailRegex = RegExp(
+                            r'^[^@\s]+@[^@\s]+\.[^@\s]+$'); // Simple email regex
+                        if (!emailRegex.hasMatch(value)) {
+                          return 'Enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedLanguage,
+                      decoration: InputDecoration(
+                        labelText: 'Language',
+                        labelStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.normal,
                         ),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedLanguage = newValue!;
-                          });
-                        },
-                        // items: <String>['English 🇬🇧', 'العربية 🇲🇦', 'Français 🇫🇷'].map<DropdownMenuItem<String>>((String value) {
-                        items: <String>['en', 'fr', 'ar']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.secondary,
+                              width: 2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.secondary,
+                              width: 2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        filled: true,
+                        fillColor: Theme.of(context)
+                            .colorScheme
+                            .secondary
+                            .withOpacity(0.1),
                       ),
-                     
-                    ],
-                  ),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedLanguage = newValue!;
+                        });
+                      },
+                      items: <String>['en', 'ar']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 32),
+                    BButton(
+                        text: "Save",
+                        onTap: () => {
+                              if (_formKey.currentState?.validate() ?? false)
+                                {save()}
+                            }),
+                  ],
                 ),
-              )),
-    );
+              ),
+            ),
+          ),
+        ));
   }
 }

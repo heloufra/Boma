@@ -119,8 +119,8 @@ class _LoginScreenState extends State<OtpScreen> {
     } else if (state.isError) {
       setState(() {
         isLoading = false;
-        // error = true;
-        // errorMsg = state.errorMessage ?? "";
+        error = true;
+        errorMsg = state.errorMessage ?? "";
       });
       return false;
     } else if (state.isAuthenticated) {
@@ -130,6 +130,7 @@ class _LoginScreenState extends State<OtpScreen> {
         if (state.isNewUser) {
           context.go('/auth/register');
         } else {
+          // UndoableType data = UndoableType("mess", "ss", "sas");
           context.go("/settings");
         }
       }

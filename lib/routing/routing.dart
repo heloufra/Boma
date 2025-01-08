@@ -1,5 +1,7 @@
 import 'package:boma/error/error.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:june/june.dart';
 import 'package:boma/auth/auth.dart';
@@ -25,6 +27,17 @@ CustomTransitionPage<T> buildPageWithTransition<T>(
       );
     },
   );
+}
+Future<String?> checkConnectivityAndGps() async {
+  final connectivityResult = await Connectivity().checkConnectivity();
+  final isGpsEnabled = await Geolocator.isLocationServiceEnabled();
+
+  if (connectivityResult.contains(ConnectivityResult.other)) {
+    return '/error';
+  } else if (!isGpsEnabled) {
+    return '/error';
+  }
+  return null;
 }
 
 final godRouter = GoRouter(
@@ -68,7 +81,6 @@ final godRouter = GoRouter(
             ),
             GoRoute(
               path: 'register',
-              builder: (context, state) => const RegisterScreen(),
               pageBuilder: (context, state) {
                 return buildPageWithTransition(
                     context, state, const RegisterScreen());
@@ -176,6 +188,18 @@ final godRouter = GoRouter(
                     ));
               },
             ),
+            GoRoute(
+              path: '/connect',
+              pageBuilder: (context, state) {
+                return buildPageWithTransition(context, state, const ConnectivityErrorScreen());
+              },
+              ),
+            GoRoute(
+              path: '/location',
+              pageBuilder: (context, state) {
+                return buildPageWithTransition(context, state, const LocationErrorScreen());
+              },
+              )
           ],
         ),
       ],

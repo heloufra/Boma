@@ -139,10 +139,11 @@ class AddressState extends JuneState {
       status = AddressStatus.error;
       errorMessage = e.toString();
     } finally {
-      isLoading = false;
+     
       if (id == _defaultAddressId) {
         setDefaultAddress(addresses.first.id ?? 0);
       }
+      isLoading = false;
       setState();
     }
   }
