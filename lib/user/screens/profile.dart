@@ -95,7 +95,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
     if (_nameController.text.isEmpty || _emailController.text.isEmpty) {
       setState(() {
         error = true;
-        errorMsg = "Full ...";
+        errorMsg = "...";
       });
 
       startTimer();
@@ -140,7 +140,9 @@ class UserProfileScreenState extends State<UserProfileScreen> {
           backgroundColor:
               !error ? Theme.of(context).colorScheme.surface : Colors.red,
           title: Text(
-            errorMsg,
+            error? 
+            errorMsg :
+            'Profile Details',
             style: TextStyle(
               fontSize: 18,
               color: Theme.of(context).colorScheme.primary,
@@ -158,7 +160,7 @@ class UserProfileScreenState extends State<UserProfileScreen> {
                 'Save',
                 style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 22),
+                    fontSize: 18),
               ),
             ),
           ],

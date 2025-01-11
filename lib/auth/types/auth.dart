@@ -14,14 +14,13 @@ class RegisterUser {
 
   RegisterUser({required this.name, this.avatarURL = ""});
 }
+
 class PhoneAuthCredential {
   final String phoneNumber;
-  // final String? verificationId;
   final String? smsCode;
 
   PhoneAuthCredential({
     required this.phoneNumber,
-    // this.verificationId,
     this.smsCode,
   });
 }
