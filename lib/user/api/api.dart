@@ -1,4 +1,3 @@
-
 import 'package:boma/dio.dart';
 import 'package:boma/user/type/user.dart';
 import 'package:dio/dio.dart';
@@ -27,7 +26,6 @@ class UserProfileAPI {
   }
 
   Future<UserProfileResponse> updateUserProfile( UserProfile user) async {
-    // print("About to create a request to update user profile ");
     try {
       final response = await dioClient.put(
         '/c/account/',
@@ -42,6 +40,24 @@ class UserProfileAPI {
       );
     } on DioException catch (e) {
       String message = DioClient.handleDioError(e);
+      return UserProfileResponse(
+        success: false,
+        message: '🚨📢🔔 $message',
+      );
+    }
+  }
+
+  Future<UserProfileResponse> signOut() async {
+    try {
+      final response = await dioClient.post('/auth/logout/', data : null,);
+
+      return UserProfileResponse(
+        success: true,
+        message: 'Sign out successfully',
+        response: response,
+      );
+    } on DioException catch (e) {
+       String message = DioClient.handleDioError(e);
       return UserProfileResponse(
         success: false,
         message: '🚨📢🔔 $message',

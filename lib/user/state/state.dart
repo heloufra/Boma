@@ -1,4 +1,5 @@
 import 'package:june/june.dart';
+import '../../auth/auth.dart';
 import '../api/api.dart';
 import '../type/user.dart';
 
@@ -11,6 +12,7 @@ enum UserProfileStatus {
 }
 
 class UserProfileState extends JuneState {
+  final TokenService _token = TokenService();
   final UserProfileAPI _api = UserProfileAPI();
   UserProfileStatus status = UserProfileStatus.initial;
   String? errorMessage;
@@ -48,7 +50,26 @@ class UserProfileState extends JuneState {
   }
 
   Future<void> signOut() async {
-      return ;
+    isLoading = true;
+    setState();
+
+    try {
+      final response = await _api.signOut();
+
+      if (response.success) {
+        _token.deleteTokens();
+       
+      } else {
+        status = UserProfileStatus.error;
+        errorMessage = response.message;
+      }
+    } catch (e) {
+      status = UserProfileStatus.error;
+      errorMessage = e.toString();
+    } finally {
+      isLoading = false;
+      setState();
+    }
   }
 
   Future<void> updateUserProfile(UserProfile userProfile) async {
